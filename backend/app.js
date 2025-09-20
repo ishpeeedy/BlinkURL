@@ -3,9 +3,7 @@ import chalk from 'chalk';
 
 import dotenv from 'dotenv';
 import connectDB from './src/config/mongodb.config.js';
-
-import short_url from './src/routes/short_Url.route.js';
-import urlSchema from './src/models/short_url.model.js';
+import shortUrlRouter from './src/routes/short_Url.route.js';
 
 dotenv.config({ path: './.env' });
 
@@ -17,25 +15,16 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.use('/api/create', short_url);
+app.use('/api', shortUrlRouter);
+app.use('/', shortUrlRouter);
 
-app.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  const url = await urlSchema.findOne({ short_url: id });
-  if (url) {
-    url.clicks += 1;
-    await url.save();
-    console.log('Redirecting to:', url.full_url, ' Click count:', url.clicks);
-    return res.redirect(url.full_url);
-  }
-  return res.status(404).send('URL not found');
-});
+// const PORT = process.env.PORT || 3000;
 
-app.listen(5000, () => {
+app.listen(process.env.PORT, () => {
   connectDB();
   console.log(
     `${chalk.bgGreen(
       chalk.bold('Server is running')
-    )} on port ${chalk.yellow.underline('http://localhost:5000')}`
+    )} on port ${chalk.yellow.underline(`http://localhost:${process.env.PORT}`)}`
   );
 });
