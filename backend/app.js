@@ -4,6 +4,8 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import connectDB from './src/config/mongodb.config.js';
 import shortUrlRouter from './src/routes/short_Url.route.js';
+import globalErrorHandler from './src/middleware/errorHandler.js';
+import { AppError } from './src/utils/errorUtils.js';
 
 dotenv.config({ path: './.env' });
 
@@ -17,6 +19,18 @@ app.get('/', (req, res) => {
 
 app.use('/api', shortUrlRouter);
 app.use('/', shortUrlRouter);
+
+// Handle undefined routes - catch-all middleware
+app.use((req, res, next) => {
+  const err = new AppError(
+    `Can't find ${req.originalUrl} on this server!`,
+    404
+  );
+  next(err);
+});
+
+// Global error handling middleware (must be last)
+app.use(globalErrorHandler);
 
 // const PORT = process.env.PORT || 3000;
 
