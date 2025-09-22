@@ -32,8 +32,6 @@ app.use((req, res, next) => {
 // Global error handling middleware (must be last)
 app.use(globalErrorHandler);
 
-// const PORT = process.env.PORT || 3000;
-
 app.listen(process.env.PORT, () => {
   connectDB();
   console.log(
