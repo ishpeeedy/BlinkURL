@@ -1,42 +1,30 @@
-import { createShortUrlServiceWithoutUser } from '../services/short_Url.service.js';
 import { getShortUrl } from '../dao/short_url.js';
-import { catchAsync, AppError } from '../utils/errorUtils.js';
+import {
+  createShortUrlWithoutUser,
+  createShortUrlWithUser,
+} from '../services/short_Url.service.js';
+import wrapAsync from '../utils/tryCatchWrapper.js';
 
-export const createShortUrl = catchAsync(async (req, res, next) => {
-  console.log(req.body, 'req.body from controller');
-  const { url } = req.body;
-
-  // Validate URL input
-  if (!url) {
-    return next(new AppError('Please provide a URL to shorten', 400));
+export const createShortUrl = wrapAsync(async (req, res) => {
+  const data = req.body;
+  let shortUrl;
+  if (req.user) {
+    shortUrl = await createShortUrlWithUser(data.url, req.user._id, data.slug);
+  } else {
+    shortUrl = await createShortUrlWithoutUser(data.url);
   }
-  try {
-    new URL(url);
-  } catch {
-    return next(new AppError('Please provide a valid URL', 400));
-  }
-
-  const shortUrl = await createShortUrlServiceWithoutUser(url);
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      originalUrl: url,
-      shortUrl: `${process.env.APP_URL}${shortUrl}`,
-      shortCode: shortUrl,
-    },
-  });
+  res.status(200).json({ shortUrl: `${process.env.APP_URL}${shortUrl}` });
 });
 
-export const redirectFromShortUrl = catchAsync(async (req, res, next) => {
+export const redirectFromShortUrl = wrapAsync(async (req, res) => {
   const { id } = req.params;
-  if (!id) {
-    return next(new AppError('Short URL ID is required', 400));
-  }
   const url = await getShortUrl(id);
-  if (!url) {
-    return next(new AppError('Short URL not found', 404));
-  }
-  console.log('Redirecting to:', url.full_url);
+  if (!url) throw new Error('Short URL not found');
   res.redirect(url.full_url);
+});
+
+export const createCustomShortUrl = wrapAsync(async (req, res) => {
+  const { url, customUrl } = req.body;
+  const shortUrl = await createShortUrlWithoutUser(url, customUrl);
+  res.status(200).json({ shortUrl: `${process.env.APP_URL}${shortUrl}` });
 });

@@ -1,35 +1,18 @@
-import { saveShortUrl } from '../dao/short_url.js';
-import { generateNanoid } from '../utils/helper.js';
-import { AppError } from '../utils/errorUtils.js';
+import { generateNanoId } from '../utils/helper.js';
+import { getCustomShortUrl, saveShortUrl } from '../dao/short_url.js';
 
-export const createShortUrlServiceWithoutUser = async (url) => {
-  try {
-    const shortUrl = await generateNanoid(8);
-
-    if (!shortUrl) {
-      throw new AppError('Failed to generate short URL code', 500);
-    }
-
-    await saveShortUrl(shortUrl, url);
-    return shortUrl;
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError('Failed to create short URL', 500);
-  }
+export const createShortUrlWithoutUser = async (url) => {
+  const shortUrl = generateNanoId(7);
+  if (!shortUrl) throw new Error('Short URL not generated');
+  await saveShortUrl(shortUrl, url);
+  return shortUrl;
 };
 
-export const createShortUrlServiceWithUser = async (url, userId) => {
-  try {
-    const shortUrl = await generateNanoid(8);
+export const createShortUrlWithUser = async (url, userId, slug = null) => {
+  const shortUrl = slug || generateNanoId(7);
+  const exists = await getCustomShortUrl(slug);
+  if (exists) throw new Error('This custom url already exists');
 
-    if (!shortUrl) {
-      throw new AppError('Failed to generate short URL code', 500);
-    }
-
-    await saveShortUrl(shortUrl, url, userId);
-    return shortUrl;
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new AppError('Failed to create short URL', 500);
-  }
+  await saveShortUrl(shortUrl, url, userId);
+  return shortUrl;
 };

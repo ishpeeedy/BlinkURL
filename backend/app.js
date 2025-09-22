@@ -1,52 +1,47 @@
 import express from 'express';
-import chalk from 'chalk';
-import cors from 'cors';
-
 import dotenv from 'dotenv';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import connectDB from './src/config/mongodb.config.js';
-import shortUrlRouter from './src/routes/short_Url.route.js';
-import globalErrorHandler from './src/middleware/errorHandler.js';
-import { AppError } from './src/utils/errorUtils.js';
+import short_url from './src/routes/short_Url.route.js';
+import user_routes from './src/routes/user.routes.js';
+import auth_routes from './src/routes/auth.routes.js';
+import { redirectFromShortUrl } from './src/controllers/short_url.controller.js';
+import { errorHandler } from './src/utils/errorHandler.js';
+import { attachUser } from './src/utils/attachUser.js';
 
-dotenv.config({ path: './.env' });
+dotenv.config('./.env');
 
 const app = express();
 
-// CORS configuration for frontend communication
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Vite dev server default port
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? process.env.FRONTEND_URL
+        : 'http://localhost:5173',
     credentials: true,
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+app.use(attachUser);
 
-app.use('/api', shortUrlRouter);
-app.use('/', shortUrlRouter);
+app.use('/api/user', user_routes);
+app.use('/api/auth', auth_routes);
+app.use('/api/create', short_url);
+app.get('/:id', redirectFromShortUrl);
 
-// Handle undefined routes - catch-all middleware
-app.use((req, res, next) => {
-  const err = new AppError(
-    `Can't find ${req.originalUrl} on this server!`,
-    404
-  );
-  next(err);
-});
+app.use(errorHandler);
 
-// Global error handling middleware (must be last)
-app.use(globalErrorHandler);
+const PORT = process.env.PORT || 3000;
 
-app.listen(process.env.PORT, () => {
+app.listen(PORT, () => {
   connectDB();
-  console.log(
-    `${chalk.bgGreen(
-      chalk.bold('Server is running')
-    )} on port ${chalk.yellow.underline(`http://localhost:${process.env.PORT}`)}`
-  );
+  console.log(`Server is running on port ${PORT}`);
 });
+
+// GET - Redirection
