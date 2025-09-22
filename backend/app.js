@@ -1,5 +1,6 @@
 import express from 'express';
 import chalk from 'chalk';
+import cors from 'cors';
 
 import dotenv from 'dotenv';
 import connectDB from './src/config/mongodb.config.js';
@@ -10,6 +11,15 @@ import { AppError } from './src/utils/errorUtils.js';
 dotenv.config({ path: './.env' });
 
 const app = express();
+
+// CORS configuration for frontend communication
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Vite dev server default port
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

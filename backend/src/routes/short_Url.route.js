@@ -6,7 +6,8 @@ import {
 
 const router = express.Router();
 
-router.post('/api/create', createShortUrl);
+// POST /api/create -> createShortUrl (since it's mounted at /api)
+router.post('/create', createShortUrl);
 
 router.get('/:id', redirectFromShortUrl);
 
