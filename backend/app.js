@@ -16,10 +16,7 @@ const app = express();
 
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? process.env.FRONTEND_URL
-        : 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://blinkurl-ppd2.onrender.com'],
     credentials: true,
   })
 );
