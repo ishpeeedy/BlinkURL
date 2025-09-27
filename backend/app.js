@@ -16,7 +16,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://blinkurl-ppd2.onrender.com'],
+    origin: true, // Allow all origins for production testing
     credentials: true,
   })
 );
