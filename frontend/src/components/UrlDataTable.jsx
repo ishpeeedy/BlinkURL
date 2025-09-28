@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -38,6 +38,17 @@ const formatColumnLabel = (id) => {
 const UrlDataTable = ({ urls }) => {
   const [sorting, setSorting] = useState([]);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300); // 250ms debounce value
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
 
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState({
@@ -49,13 +60,13 @@ const UrlDataTable = ({ urls }) => {
 
   // Filtering logic
   const filteredUrls = React.useMemo(() => {
-    if (!search) return urls;
+    if (!debouncedSearch) return urls;
     return urls.filter(
       (url) =>
-        url.full_url.toLowerCase().includes(search.toLowerCase()) ||
-        url.short_url.toLowerCase().includes(search.toLowerCase())
+        url.full_url.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        url.short_url.toLowerCase().includes(debouncedSearch.toLowerCase())
     );
-  }, [urls, search]);
+  }, [urls, debouncedSearch]);
 
   const columns = [
     {
