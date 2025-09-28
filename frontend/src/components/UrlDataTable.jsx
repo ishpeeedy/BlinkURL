@@ -16,7 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -24,7 +24,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
+
+const formatColumnLabel = (id) => {
+  if (id === 'full_url') return 'Original URL';
+  if (id === 'short_url') return 'Short URL';
+  if (id === 'clicks') return 'Clicks';
+  if (id === 'createdAt') return 'Created';
+  return id.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+};
 
 const UrlDataTable = ({ urls }) => {
   const [sorting, setSorting] = useState([]);
@@ -109,6 +118,7 @@ const UrlDataTable = ({ urls }) => {
     {
       id: 'actions',
       header: 'Actions',
+      enableHiding: false,
       cell: ({ row }) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -166,36 +176,38 @@ const UrlDataTable = ({ urls }) => {
       {/* Search Bar & Column Visibility Filter */}
       <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
         <div className="flex gap-2 items-center">
-          <span className="font-semibold text-sm">Columns:</span>
-          {Object.keys(columnVisibility).map((col) => (
-            <label
-              key={col}
-              className="flex items-center gap-1 text-xs font-medium"
-            >
-              <input
-                type="checkbox"
-                checked={columnVisibility[col]}
-                onChange={() =>
-                  setColumnVisibility((prev) => ({
-                    ...prev,
-                    [col]: !prev[col],
-                  }))
-                }
-                className="accent-purple-600"
-              />
-              {col === 'full_url'
-                ? 'Original URL'
-                : col === 'short_url'
-                  ? 'Short URL'
-                  : col === 'clicks'
-                    ? 'Clicks'
-                    : col === 'createdAt'
-                      ? 'Created'
-                      : col}
-            </label>
-          ))}
+          {/* Dropdown-based column selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="noShadow" size="sm">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-56">
+              {/* Optional label at top */}
+              <DropdownMenuLabel>Visible columns</DropdownMenuLabel>
+
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {formatColumnLabel(column.id)}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <div className="flex justify-end">
+
+        <div className="flex w-full">
           <input
             type="text"
             value={search}
@@ -205,6 +217,7 @@ const UrlDataTable = ({ urls }) => {
           />
         </div>
       </div>
+
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
