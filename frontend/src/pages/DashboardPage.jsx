@@ -1,50 +1,44 @@
 import React from 'react';
 import UrlForm from '../components/UrlForm';
 import UrlDataTable from '../components/UrlDataTable';
+import { useQuery } from '@tanstack/react-query';
+import { getAllUserUrls } from '../api/user.api';
 
-const dummyUrls = [
-  {
-    _id: '1',
-    full_url: 'https://example.com',
-    short_url: 'abc123',
-    clicks: 5,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: '2',
-    full_url: 'https://neobrutalism.dev',
-    short_url: 'neo456',
-    clicks: 10,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: '3',
-    full_url: 'https://github.com',
-    short_url: 'gh789',
-    clicks: 2,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: '4',
-    full_url: 'https://react.dev',
-    short_url: 'react101',
-    clicks: 8,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    _id: '5',
-    full_url: 'https://vitejs.dev',
-    short_url: 'vite202',
-    clicks: 0,
-    createdAt: new Date().toISOString(),
-  },
-];
+import { Alert } from '@/components/ui/alert';
 
 const DashboardPage = () => {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['userUrls'],
+    queryFn: getAllUserUrls,
+    refetchInterval: 30000,
+    staleTime: 0,
+  });
+
+  let urls = [];
+  if (data && data.urls) {
+    urls = data.urls;
+  }
+
   return (
     <div>
-      {/* <UrlForm /> */}
-      <UrlDataTable urls={dummyUrls} />
+      <div>
+        <UrlForm />
+      </div>
+      {isLoading ? (
+        <div className="flex justify-center my-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      ) : isError ? (
+        <Alert variant="warning">
+          <AlertTriangle />
+          <AlertDescription>
+            {' '}
+            Error loading your URLs:{error.message}
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <UrlDataTable urls={urls} />
+      )}
     </div>
   );
 };
