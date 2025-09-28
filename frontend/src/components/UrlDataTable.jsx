@@ -3,6 +3,7 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   flexRender,
 } from '@tanstack/react-table';
 import {
@@ -26,6 +27,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 const formatColumnLabel = (id) => {
   if (id === 'full_url') return 'Original URL';
@@ -39,6 +49,7 @@ const UrlDataTable = ({ urls }) => {
   const [sorting, setSorting] = useState([]);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
   // Debounce search input
   useEffect(() => {
@@ -175,11 +186,13 @@ const UrlDataTable = ({ urls }) => {
   const table = useReactTable({
     data: filteredUrls,
     columns,
-    state: { sorting, columnVisibility },
+    state: { sorting, columnVisibility, pagination },
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
@@ -266,6 +279,38 @@ const UrlDataTable = ({ urls }) => {
           )}
         </TableBody>
       </Table>
+      <Pagination className="cursor-pointer">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              as="button"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            />
+          </PaginationItem>
+          {Array.from({ length: table.getPageCount() }).map((_, i) => (
+            <PaginationItem key={i}>
+              <PaginationLink
+                as="button"
+                isActive={i === table.getState().pagination.pageIndex}
+                onClick={(e) => {
+                  e.preventDefault();
+                  table.setPageIndex(i);
+                }}
+              >
+                {i + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              as="button"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };
