@@ -55,7 +55,7 @@ const UrlDataTable = ({ urls }) => {
     full_url: true,
     short_url: true,
     clicks: true,
-    createdAt: false,
+    createdAt: true,
   });
 
   // Filtering logic
@@ -184,48 +184,48 @@ const UrlDataTable = ({ urls }) => {
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-8 bg-white">
-      {/* Search Bar & Column Visibility Filter */}
-      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-        <div className="flex gap-2 items-center">
-          {/* Dropdown-based column selector */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="noShadow" size="sm">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-56">
-              {/* Optional label at top */}
-              <DropdownMenuLabel>Visible columns</DropdownMenuLabel>
-
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {formatColumnLabel(column.id)}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <div className="flex w-full">
-          <input
+      <div className="flex mb-1">
+        {/* search bar */}
+        <div className="flex w-1/2">
+          <Input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search URLs..."
-            className="border border-border rounded-base px-3 py-2 text-sm w-64"
           />
+        </div>
+        <div className="ml-auto">
+          <div className="flex gap-2 items-center">
+            {/* Dropdown-based column selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="noShadow" size="sm">
+                  Columns <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-56">
+                {/* Optional label at top */}
+                <DropdownMenuLabel>Visible columns</DropdownMenuLabel>
+
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {formatColumnLabel(column.id)}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 
