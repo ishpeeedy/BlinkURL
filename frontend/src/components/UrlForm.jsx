@@ -1,4 +1,16 @@
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
 import { createShortUrl } from '../api/shortUrl.api';
 import { useSelector } from 'react-redux';
 import { queryClient } from '../main';
@@ -28,81 +40,85 @@ const UrlForm = () => {
     // Reset the copied state after 2 seconds
     setTimeout(() => {
       setCopied(false);
-    }, 2000);
+    }, 1000);
   };
 
   return (
     <div className="space-y-4">
-      <div>
-        <label
-          htmlFor="url"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Enter your URL
-        </label>
-        <input
-          type="url"
-          id="url"
-          value={url}
-          onInput={(event) => setUrl(event.target.value)}
-          placeholder="https://example.com"
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+      <div className="div">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardDescription>Enter the URL you want to shorten</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form>
+              <div className="flex flex-col gap-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Enter your URL</Label>
+                  <Input
+                    type="url"
+                    id="url"
+                    value={url}
+                    onInput={(event) => setUrl(event.target.value)}
+                    placeholder="https://example.com"
+                    required
+                  />
+                </div>
+              </div>
+            </form>
+          </CardContent>
+          <CardFooter className="flex-col gap-2">
+            <Button type="submit" className="w-full" onClick={handleSubmit}>
+              Shorten URL
+            </Button>
+            {error && (
+              <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
+                {error}
+              </div>
+            )}
+            {isAuthenticated && (
+              <div className="flex flex-col w-full">
+                <label htmlFor="customSlug">Custom URL (optional)</label>
+                <Input
+                  type="text"
+                  id="customSlug"
+                  value={customSlug}
+                  onChange={(event) => setCustomSlug(event.target.value)}
+                  placeholder="Enter custom slug"
+                />
+              </div>
+            )}
+            {shortUrl && (
+              <div className="flex flex-col w-full">
+                Your shortened URL:
+                <div className="flex items-center">
+                  <Input type="text" readOnly value={shortUrl} />
+                  <Button
+                    variant="noShadow"
+                    onClick={handleCopy}
+                    className={`px-4 py-2 rounded-r-md transition-colors duration-500 ${
+                      copied
+                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        : 'bg-gray-200 hover:bg-gray-300'
+                    }`}
+                  >
+                    {copied ? 'Copied!' : 'Copy'}
+                  </Button>
+                </div>
+              </div>
+            )}
+            {/* REQURIES A !ISAUTHENTICATED -TO ONLY BE DEISPLAAYED IF NOT LOGGED IN */}
+            {!isAuthenticated && (
+              <div className="mt-4 text-center text-sm">
+                Want a custom URL?{' '}
+                <a href="#" className="underline underline-offset-4">
+                  Sign up
+                </a>
+              </div>
+            )}
+          </CardFooter>
+        </Card>
       </div>
-      <button
-        onClick={handleSubmit}
-        type="submit"
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-      >
-        Shorten URL
-      </button>
-      {error && (
-        <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
-          {error}
-        </div>
-      )}
-      {isAuthenticated && (
-        <div className="mt-4">
-          <label
-            htmlFor="customSlug"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Custom URL (optional)
-          </label>
-          <input
-            type="text"
-            id="customSlug"
-            value={customSlug}
-            onChange={(event) => setCustomSlug(event.target.value)}
-            placeholder="Enter custom slug"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      )}
-      {shortUrl && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2">Your shortened URL:</h2>
-          <div className="flex items-center">
-            <input
-              type="text"
-              readOnly
-              value={shortUrl}
-              className="flex-1 p-2 border border-gray-300 rounded-l-md bg-gray-50"
-            />
-            <button
-              onClick={handleCopy}
-              className={`px-4 py-2 rounded-r-md transition-colors duration-200 ${
-                copied
-                  ? 'bg-green-500 text-white hover:bg-green-600'
-                  : 'bg-gray-200 hover:bg-gray-300'
-              }`}
-            >
-              {copied ? 'Copied!' : 'Copy'}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
