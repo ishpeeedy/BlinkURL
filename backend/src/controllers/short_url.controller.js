@@ -4,6 +4,7 @@ import {
   createShortUrlWithUser,
 } from '../services/short_Url.service.js';
 import wrapAsync from '../utils/tryCatchWrapper.js';
+import { trackClick } from '../controllers/analytics.controller.js';
 
 export const createShortUrl = wrapAsync(async (req, res) => {
   const data = req.body;
@@ -20,6 +21,10 @@ export const redirectFromShortUrl = wrapAsync(async (req, res) => {
   const { id } = req.params;
   const url = await getShortUrl(id);
   if (!url) throw new Error('Short URL not found');
+  
+  // Track the click asynchronously - don't wait for it to complete
+  await trackClick(req, url._id);  // Changed to await to ensure tracking completes
+  
   res.redirect(url.full_url);
 });
 
