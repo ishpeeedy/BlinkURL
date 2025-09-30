@@ -3,16 +3,17 @@ import { getShortUrl } from '../dao/short_url.js';
 import { createClick, getClickAnalytics } from '../dao/click.dao.js';
 import { getLocationFromIP, parseUserAgent } from '../utils/analytics.js';
 import wrapAsync from '../utils/tryCatchWrapper.js';
+import logger from '../utils/logger.js';
+import getClientIP from '../utils/getClientIP.js';
 
 export const trackClick = wrapAsync(async (req, shortUrlId) => {
   try {
-    console.log('Starting click tracking...'); // Debug log
-    console.log('ShortURL ID received:', shortUrlId); // Log the ID we received
+    logger.info('Starting click tracking', { shortUrlId });
 
-    const ip = req.ip || req.connection.remoteAddress;
+    const ip = getClientIP(req);
     const userAgentString = req.headers['user-agent'];
 
-    console.log('Request details:', { 
+    logger.debug('Request details', { 
       ip, 
       userAgent: userAgentString,
       shortUrlId,
@@ -21,12 +22,11 @@ export const trackClick = wrapAsync(async (req, shortUrlId) => {
     });
 
     const location = getLocationFromIP(ip);
-    console.log('Location data:', location);
+    logger.debug('Location data', { location });
 
     const userAgent = parseUserAgent(userAgentString);
-    console.log('User agent data:', userAgent);
+    logger.debug('User agent data', { userAgent });
 
-    // Create click data without converting ID (it should already be an ObjectId)
     const clickData = {
       shortUrl: shortUrlId,
       ip,
@@ -34,14 +34,17 @@ export const trackClick = wrapAsync(async (req, shortUrlId) => {
       userAgent
     };
 
-    console.log('Attempting to save click data:', clickData);
+    logger.debug('Attempting to save click data', { clickData });
 
     const click = await createClick(clickData);
-    console.log('Click successfully saved to database:', click);
+    logger.info('Click tracked successfully', { 
+      clickId: click._id,
+      shortUrlId: click.shortUrl
+    });
 
     return click;
   } catch (error) {
-    console.error('Error in trackClick:', {
+    logger.error('Error tracking click', {
       error: error.message,
       stack: error.stack,
       shortUrlId: shortUrlId
