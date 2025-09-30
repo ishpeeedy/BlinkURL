@@ -19,12 +19,12 @@ const getClientIP = (req) => {
 
     // Array of headers that might contain the real IP, in order of preference
     const ipSources = [
-        forwardedFor,
+        req.headers['cf-connecting-ip'], // Prioritize Cloudflare's IP detection
+        req.headers['true-client-ip'],   // Cloudflare true client IP
+        forwardedFor,                    // First IP from x-forwarded-for chain
         req.headers['x-real-ip'],
         req.headers['x-client-ip'],
-        req.headers['cf-connecting-ip'],
         req.headers['render-proxy-ip'],
-        req.headers['true-client-ip'],
         req.connection?.remoteAddress,
         req.socket?.remoteAddress,
         req.ip

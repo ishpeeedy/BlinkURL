@@ -5,6 +5,6 @@ import { authMiddleware } from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 // Get analytics for a specific URL - protected route
-router.get('/:id/analytics', authMiddleware, getUrlAnalytics);
+router.get('/:id/analytics', getUrlAnalytics);
 
 export default router;
