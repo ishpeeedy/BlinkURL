@@ -5,7 +5,7 @@ import { checkAuth } from '../utils/helper';
 
 export const analyticsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/analytics/$id',
+  path: '/analytics/$id/charts',
   component: AnalyticsPage,
   beforeLoad: checkAuth,
 });

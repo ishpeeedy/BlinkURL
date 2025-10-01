@@ -1,145 +1,181 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from '@tanstack/react-router';
-import { getUrlAnalytics } from '../api/shortUrl.api';
+import { TrendingUp } from "lucide-react"
+import { Label, Pie, PieChart } from "recharts"
+
+import * as React from "react"
+
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
 
-const UrlAnalytics = () => {
-  const { id } = useParams();
-  const [analytics, setAnalytics] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const description = "A donut chart with text"
 
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        setLoading(true);
-        const data = await getUrlAnalytics(id);
-        setAnalytics(data);
-        setError(null);
-      } catch (err) {
-        setError(err.message || 'Failed to fetch analytics');
-      } finally {
-        setLoading(false);
-      }
-    };
+const chartData = [
+  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+  { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
+  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+  { browser: "other", visitors: 190, fill: "var(--color-other)" },
+]
 
-    fetchAnalytics();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-          <p className="text-red-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">URL Analytics</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Total Clicks */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Clicks</CardTitle>
-            <CardDescription>Total number of times this URL was accessed</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{analytics?.totalClicks || 0}</p>
-          </CardContent>
-        </Card>
-
-        {/* Clicks by Country */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Countries</CardTitle>
-            <CardDescription>Click distribution by country</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {analytics?.byCountry?.map((country) => (
-                <div key={country._id} className="flex justify-between items-center">
-                  <span>{country._id}</span>
-                  <span className="font-semibold">{country.count}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Clicks by Browser */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Browsers</CardTitle>
-            <CardDescription>Click distribution by browser</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {analytics?.byBrowser?.map((browser) => (
-                <div key={browser._id} className="flex justify-between items-center">
-                  <span>{browser._id}</span>
-                  <span className="font-semibold">{browser.count}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Clicks by Device */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Devices</CardTitle>
-            <CardDescription>Click distribution by device type</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {analytics?.byDevice?.map((device) => (
-                <div key={device._id} className="flex justify-between items-center">
-                  <span>{device._id}</span>
-                  <span className="font-semibold">{device.count}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Daily Clicks */}
-        <Card className="md:col-span-2 lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Daily Clicks</CardTitle>
-            <CardDescription>Click trends over the last 30 days</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {analytics?.byDay?.map((day) => (
-                <div key={day._id} className="flex justify-between items-center">
-                  <span>{new Date(day._id).toLocaleDateString()}</span>
-                  <span className="font-semibold">{day.count}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+const chartConfig = {
+  visitors: {
+    label: "Visitors",
+  },
+  chrome: {
+    label: "Chrome",
+    color: "var(--chart-1)",
+  },
+  safari: {
+    label: "Safari",
+    color: "var(--chart-2)",
+  },
+  firefox: {
+    label: "Firefox",
+    color: "var(--chart-3)",
+  },
+  edge: {
+    label: "Edge",
+    color: "var(--chart-4)",
+  },
+  other: {
+    label: "Other",
+    color: "var(--chart-5)",
+  },
 };
 
-export default UrlAnalytics;
+export default function ChartPieDonutText() {
+  const totalVisitors = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
+  }, [])
+
+  return (
+    <Card className="flex flex-col bg-secondary-background text-foreground">
+      <CardHeader className="items-center pb-0">
+        <CardTitle>Pie Chart - Donut with Text</CardTitle>
+        <CardDescription>January - June 2024</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-1 pb-0">
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square max-h-[250px]"
+        >
+          <PieChart>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Pie
+              data={chartData}
+              dataKey="visitors"
+              nameKey="browser"
+              innerRadius={60}
+              strokeWidth={2}
+            >
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    return (
+                      <text
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                      >
+                        <tspan
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          className="fill-foreground text-3xl font-bold"
+                        >
+                          {totalVisitors.toLocaleString()}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 24}
+                          className="fill-foreground"
+                        >
+                          Visitors
+                        </tspan>
+                      </text>
+                    )
+                  }
+                }}
+              />
+            </Pie>
+          </PieChart>
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex-col gap-2 text-sm">
+        <div className="flex items-center gap-2 leading-none font-medium">
+          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="text-muted-foreground leading-none">
+          Showing total visitors for the last 6 months
+        </div>
+      </CardFooter>
+    </Card>
+  )
+}
+
+
+// const UrlAnalytics = () => {
+
+//   return (
+//     <div className="container mx-auto px-4 py-8">
+//       <h1 className="text-2xl font-bold mb-6">URL Analytics Charts</h1>
+     
+//     </div>
+//   );
+// };
+
+// export default UrlAnalytics;
+//  --------------------------------------------------------------------------LEGACY CODE:
+//   const { id } = useParams();
+//   const [analytics, setAnalytics] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   useEffect(() => {
+//     const fetchAnalytics = async () => {
+//       try {
+//         setLoading(true);
+//         const data = await getUrlAnalytics(id);
+//         setAnalytics(data);
+//         setError(null);
+//       } catch (err) {
+//         setError(err.message || 'Failed to fetch analytics');
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchAnalytics();
+//   }, [id]);
+
+//   if (loading) {
+//     return (
+//       <div className="flex items-center justify-center min-h-screen">
+//         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="flex items-center justify-center min-h-screen">
+//         <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+//           <p className="text-red-600">{error}</p>
+//         </div>
+//       </div>
+//     );
+//   }
