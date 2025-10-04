@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { deleteShortUrl } from '../api/shortUrl.api';
 import {
   useReactTable,
   getCoreRowModel,
@@ -46,10 +49,24 @@ const formatColumnLabel = (id) => {
 };
 
 const UrlDataTable = ({ urls }) => {
+  const queryClient = useQueryClient();
   const [sorting, setSorting] = useState([]);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+
+  const handleDelete = async (shortUrl) => {
+    if (window.confirm(`Are you sure you want to delete the short URL "${shortUrl}"? This will also delete all associated click data.`)) {
+      try {
+        await deleteShortUrl(shortUrl);
+        // Invalidate and refetch the URLs query
+        queryClient.invalidateQueries(['userUrls']);
+        alert('URL deleted successfully!');
+      } catch (error) {
+        alert(`Failed to delete URL: ${error.message}`);
+      }
+    }
+  };
 
   // Debounce search input
   useEffect(() => {
@@ -169,14 +186,15 @@ const UrlDataTable = ({ urls }) => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => {
-                // TODO: Implement delete logic here
-                alert(`Delete URL: ${row.original.short_url}`);
-              }}
+              onClick={() => handleDelete(row.original.short_url)}
             >
               Delete
             </DropdownMenuItem>
-            <DropdownMenuItem>Details</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/analytics/${row.original.short_url}`} className="cursor-pointer">
+                Details
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),

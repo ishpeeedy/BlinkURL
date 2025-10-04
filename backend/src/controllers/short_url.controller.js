@@ -1,10 +1,12 @@
-import { getShortUrl } from '../dao/short_url.js';
+import { getShortUrl, getCustomShortUrl, deleteShortUrl } from '../dao/short_url.js';
 import {
   createShortUrlWithoutUser,
   createShortUrlWithUser,
 } from '../services/short_Url.service.js';
 import wrapAsync from '../utils/tryCatchWrapper.js';
 import { trackClick } from '../controllers/analytics.controller.js';
+import { deleteClicksByShortUrl } from '../dao/click.dao.js';
+import logger from '../utils/logger.js';
 
 export const createShortUrl = wrapAsync(async (req, res) => {
   const data = req.body;
@@ -32,4 +34,30 @@ export const createCustomShortUrl = wrapAsync(async (req, res) => {
   const { url, customUrl } = req.body;
   const shortUrl = await createShortUrlWithoutUser(url, customUrl);
   res.status(200).json({ shortUrl: `${process.env.APP_URL}${shortUrl}` });
+});
+
+export const deleteShortUrlById = wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  
+  logger.info('Attempting to delete short URL:', id);
+  
+  // First, get the URL to retrieve its ObjectId
+  const shortUrl = await getCustomShortUrl(id);
+  if (!shortUrl) {
+    logger.warn('Short URL not found for deletion:', id);
+    return res.status(404).json({ message: 'URL not found' });
+  }
+  
+  // Delete all associated clicks
+  const clicksDeleted = await deleteClicksByShortUrl(shortUrl._id);
+  logger.info('Deleted clicks:', clicksDeleted.deletedCount);
+  
+  // Delete the short URL
+  await deleteShortUrl(id);
+  logger.info('Short URL deleted successfully:', id);
+  
+  res.status(200).json({ 
+    message: 'URL and associated clicks deleted successfully',
+    clicksDeleted: clicksDeleted.deletedCount
+  });
 });

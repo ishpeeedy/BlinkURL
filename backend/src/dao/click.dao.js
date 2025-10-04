@@ -75,6 +75,44 @@ export const getClickAnalytics = async (shortUrlId) => {
           }},
           { $sort: { count: -1 } }
         ],
+
+        // Clicks by OS
+        byOS: [
+          { $group: {
+            _id: '$userAgent.os',
+            count: { $sum: 1 }
+          }},
+          { $sort: { count: -1 } }
+        ],
+
+        // Unique IPs
+        uniqueIPs: [
+          { $group: { _id: '$ip' } },
+          { $count: 'count' }
+        ],
+
+        // IP frequency (for detecting repeat visitors and suspicious activity)
+        ipFrequency: [
+          { $group: {
+            _id: '$ip',
+            count: { $sum: 1 },
+            lastSeen: { $max: '$timestamp' },
+            firstSeen: { $min: '$timestamp' }
+          }},
+          { $sort: { count: -1 } }
+        ],
+
+        // Suspicious activity (IPs with high frequency)
+        suspiciousActivity: [
+          { $group: {
+            _id: '$ip',
+            count: { $sum: 1 },
+            locations: { $addToSet: '$location.country' }
+          }},
+          { $match: { count: { $gte: 10 } } }, // Flag IPs with 10+ clicks
+          { $sort: { count: -1 } },
+          { $limit: 20 } // Top 20 suspicious IPs
+        ],
         
         // Clicks by day (last 30 days)
         byDay: [
@@ -94,6 +132,74 @@ export const getClickAnalytics = async (shortUrlId) => {
             }
           },
           { $sort: { _id: 1 } }
+        ],
+
+        // Clicks by hour of day (all time)
+        byHourOfDay: [
+          {
+            $group: {
+              _id: { $hour: '$timestamp' },
+              count: { $sum: 1 }
+            }
+          },
+          { $sort: { _id: 1 } }
+        ],
+
+        // Clicks by day of week (all time)
+        byDayOfWeek: [
+          {
+            $group: {
+              _id: { $dayOfWeek: '$timestamp' }, // 1=Sunday, 7=Saturday
+              count: { $sum: 1 }
+            }
+          },
+          { $sort: { _id: 1 } }
+        ],
+
+        // Clicks by day of week with device breakdown
+        byDayOfWeekWithDevice: [
+          {
+            $group: {
+              _id: { 
+                dayOfWeek: { $dayOfWeek: '$timestamp' },
+                device: '$userAgent.device'
+              },
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $group: {
+              _id: '$_id.dayOfWeek',
+              devices: {
+                $push: {
+                  device: '$_id.device',
+                  count: '$count'
+                }
+              },
+              total: { $sum: '$count' }
+            }
+          },
+          { $sort: { _id: 1 } }
+        ],
+
+        // Clicks over last 90 days (for trend analysis)
+        clicksOverTime: [
+          {
+            $match: {
+              timestamp: { 
+                $gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+              }
+            }
+          },
+          {
+            $group: {
+              _id: {
+                $dateToString: { format: '%Y-%m-%d', date: '$timestamp' }
+              },
+              count: { $sum: 1 }
+            }
+          },
+          { $sort: { _id: 1 } }
         ]
       }
     }
@@ -101,6 +207,11 @@ export const getClickAnalytics = async (shortUrlId) => {
 
   const result = analytics[0];
   result.totalClicks = result.totalClicks[0]?.count || 0;
+  result.uniqueVisitors = result.uniqueIPs[0]?.count || 0;
+  result.repeatVisitors = result.totalClicks - result.uniqueVisitors;
   
   return result;
+};
+export const deleteClicksByShortUrl = async (shortUrlId) => {
+  return await Click.deleteMany({ shortUrl: shortUrlId });
 };

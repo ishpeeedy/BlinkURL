@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { getShortUrl } from '../dao/short_url.js';
+import { getShortUrl, getCustomShortUrl } from '../dao/short_url.js';
 import { createClick, getClickAnalytics } from '../dao/click.dao.js';
 import { getLocationFromIP, parseUserAgent } from '../utils/analytics.js';
 import wrapAsync from '../utils/tryCatchWrapper.js';
@@ -56,18 +56,36 @@ export const trackClick = wrapAsync(async (req, shortUrlId) => {
 export const getUrlAnalytics = wrapAsync(async (req, res) => {
   const { id } = req.params;
   
-  // Check if URL exists
-  const shortUrl = await getShortUrl(id);
+  logger.info('Fetching analytics for slug:', id);
+  
+  // Check if URL exists - use getCustomShortUrl to avoid incrementing clicks
+  const shortUrl = await getCustomShortUrl(id);
   if (!shortUrl) {
+    logger.warn('Short URL not found:', id);
     return res.status(404).json({ message: 'URL not found' });
   }
+
+  logger.info('Found short URL:', { 
+    id: shortUrl._id, 
+    slug: shortUrl.short_url,
+    fullUrl: shortUrl.full_url 
+  });
 
   // Get analytics data
   const analytics = await getClickAnalytics(shortUrl._id);
   
+  logger.info('Analytics data retrieved:', {
+    totalClicks: analytics.totalClicks,
+    uniqueVisitors: analytics.uniqueVisitors,
+    browserCount: analytics.byBrowser?.length || 0,
+    countryCount: analytics.byCountry?.length || 0
+  });
+  
   res.status(200).json({
     urlId: id,
+    shortUrl: shortUrl.short_url,
     originalUrl: shortUrl.full_url,
+    createdAt: shortUrl.createdAt,
     ...analytics
   });
 });
