@@ -2,7 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { getUrlAnalytics } from '../api/shortUrl.api';
 import { TrendingUp, ChevronDown } from "lucide-react";
-import { Pie, PieChart, Bar, BarChart, CartesianGrid, XAxis, Area, AreaChart } from "recharts";
+import { Label, Pie, PieChart, Bar, BarChart, CartesianGrid, XAxis, Area, AreaChart } from "recharts";
+
+
 
 import {
   Card,
@@ -16,6 +18,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart";
 import {
   DropdownMenu,
@@ -32,6 +36,21 @@ const UrlAnalytics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState("30d");
+  const [copiedShort, setCopiedShort] = useState(false);
+  const [copiedOriginal, setCopiedOriginal] = useState(false);
+
+  const handleCopyShort = () => {
+    const shortUrlFull = `${import.meta.env.VITE_BACKEND_URL}/${analytics?.urlId || id}`;
+    navigator.clipboard.writeText(shortUrlFull);
+    setCopiedShort(true);
+    setTimeout(() => setCopiedShort(false), 1000);
+  };
+
+  const handleCopyOriginal = () => {
+    navigator.clipboard.writeText(analytics?.originalUrl || '');
+    setCopiedOriginal(true);
+    setTimeout(() => setCopiedOriginal(false), 1000);
+  };
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -272,9 +291,22 @@ const UrlAnalytics = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Short URL</p>
-              <p className="text-sm font-mono bg-muted px-3 py-2 rounded border-2 border-black break-all">
-                {import.meta.env.VITE_BACKEND_URL}/{analytics?.urlId || id}
-              </p>
+              <div className="flex gap-2">
+                <p className="text-sm font-mono bg-muted px-3 py-2 rounded border-2 border-black break-all flex-1">
+                  {import.meta.env.VITE_BACKEND_URL}/{analytics?.urlId || id}
+                </p>
+                <Button
+                  variant="noShadow"
+                  onClick={handleCopyShort}
+                  className={`px-4 py-2 rounded transition-colors duration-500 ${
+                    copiedShort
+                      ? 'bg-green-500 text-white hover:bg-green-600'
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                >
+                  {copiedShort ? 'Copied!' : 'Copy'}
+                </Button>
+              </div>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Created</p>
@@ -291,9 +323,23 @@ const UrlAnalytics = () => {
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1">Original URL</p>
-            <p className="text-sm font-mono bg-muted px-3 py-2 rounded border-2 border-black break-all">
-              {analytics?.originalUrl || 'Loading...'}
-            </p>
+            <div className="flex gap-2">
+              <p className="text-sm font-mono bg-muted px-3 py-2 rounded border-2 border-black break-all flex-1">
+                {analytics?.originalUrl || 'Loading...'}
+              </p>
+              <Button
+                variant="noShadow"
+                onClick={handleCopyOriginal}
+                disabled={!analytics?.originalUrl}
+                className={`px-4 py-2 rounded transition-colors duration-500 ${
+                  copiedOriginal
+                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    : 'bg-gray-200 hover:bg-gray-300'
+                }`}
+              >
+                {copiedOriginal ? 'Copied!' : 'Copy'}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
