@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { getUrlAnalytics } from '../api/shortUrl.api';
 import { TrendingUp, ChevronDown } from "lucide-react";
-import { Label, Pie, PieChart, Bar, BarChart, CartesianGrid, XAxis, Area, AreaChart } from "recharts";
+import { Pie, PieChart, Bar, BarChart, CartesianGrid, XAxis, Area, AreaChart } from "recharts";
 
 import {
   Card,
@@ -16,8 +16,6 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
 } from "@/components/ui/chart";
 import {
   DropdownMenu,

@@ -1,5 +1,4 @@
-import mongoose from 'mongoose';
-import { getShortUrl, getCustomShortUrl } from '../dao/short_url.js';
+import { getCustomShortUrl } from '../dao/short_url.js';
 import { createClick, getClickAnalytics } from '../dao/click.dao.js';
 import { getLocationFromIP, parseUserAgent } from '../utils/analytics.js';
 import wrapAsync from '../utils/tryCatchWrapper.js';

@@ -25,6 +25,9 @@ const shortUrlSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Compound index for user queries (dashboard)
+shortUrlSchema.index({ user: 1, createdAt: -1 });
+
 const UrlModel = mongoose.model('shortUrl', shortUrlSchema);
 
 export default UrlModel;
