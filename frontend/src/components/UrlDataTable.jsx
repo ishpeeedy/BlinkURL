@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { deleteShortUrl } from '../api/shortUrl.api';
+import { generateQRCode } from '../utils/qrGenerator.js';
 import {
   useReactTable,
   getCoreRowModel,
@@ -20,7 +21,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowUpDown, MoreHorizontal, ChevronDown } from 'lucide-react';
+import {
+  ArrowUpDown,
+  MoreHorizontal,
+  ChevronDown,
+  QrCode,
+  ClipboardMinus,
+  ClipboardList,
+  Trash,
+  ChartColumn,
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -39,6 +49,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { DropdownMenuRadioGroup } from '@radix-ui/react-dropdown-menu';
 
 const formatColumnLabel = (id) => {
   if (id === 'full_url') return 'Original URL';
@@ -54,9 +65,16 @@ const UrlDataTable = ({ urls }) => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
+  const [currentUrl, setCurrentUrl] = useState('');
 
   const handleDelete = async (shortUrl) => {
-    if (window.confirm(`Are you sure you want to delete the short URL "${shortUrl}"? This will also delete all associated click data.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the short URL "${shortUrl}"? This will also delete all associated click data.`
+      )
+    ) {
       try {
         await deleteShortUrl(shortUrl);
         // Invalidate and refetch the URLs query
@@ -77,7 +95,26 @@ const UrlDataTable = ({ urls }) => {
       clearTimeout(handler);
     };
   }, [search]);
+  const generateAndShowQR = async (shortUrl) => {
+    try {
+      const qrData = await generateQRCode(shortUrl);
+      setQrCodeDataUrl(qrData);
+      setCurrentUrl(`${import.meta.env.VITE_BACKEND_URL}/${shortUrl}`);
+      setShowQRModal(true);
+    } catch (error) {
+      console.error('Failed to generate QR code:', error);
+      alert('Failed to generate QR code');
+    }
+  };
 
+  const downloadQRCode = () => {
+    const link = document.createElement('a');
+    link.href = qrCodeDataUrl;
+    link.download = `qr-${currentUrl.split('/').pop()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   // Column visibility state
   const [columnVisibility, setColumnVisibility] = useState({
     full_url: true,
@@ -169,12 +206,20 @@ const UrlDataTable = ({ urls }) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
+              onClick={() => generateAndShowQR(row.original.short_url)}
+            >
+              <QrCode className="h-4 w-4" />
+              Show QR Code
+            </DropdownMenuItem>
+            <DropdownMenuItem
               onClick={() => {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
                 const shortUrlWithHost = `${backendUrl}/${row.original.short_url}`;
                 navigator.clipboard.writeText(shortUrlWithHost);
               }}
             >
+              {' '}
+              <ClipboardMinus className="h-4 w-4" />
               Copy Short URL
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -182,16 +227,25 @@ const UrlDataTable = ({ urls }) => {
                 navigator.clipboard.writeText(row.original.full_url)
               }
             >
+              {' '}
+              <ClipboardList className="h-4 w-4" />
               Copy Original URL
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleDelete(row.original.short_url)}
             >
+              {' '}
+              <Trash className="h-4 w-4" />
               Delete
             </DropdownMenuItem>
+
             <DropdownMenuItem asChild>
-              <Link to={`/analytics/${row.original.short_url}`} className="cursor-pointer">
+              <Link
+                to={`/analytics/${row.original.short_url}`}
+                className="cursor-pointer"
+              >
+                <ChartColumn className="h-4 w-4" />
                 Details
               </Link>
             </DropdownMenuItem>
@@ -214,8 +268,8 @@ const UrlDataTable = ({ urls }) => {
   });
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-8 bg-white">
-      <div className="flex mb-1">
+    <div className="w-full max-w-4xl mx-auto mt-4 bg-white">
+      <div className="flex pt-1 mb-1 ml-2">
         {/* search bar */}
         <div className="flex w-1/2">
           <Input
@@ -225,7 +279,7 @@ const UrlDataTable = ({ urls }) => {
             placeholder="Search URLs..."
           />
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto mr-2">
           <div className="flex gap-2 items-center">
             {/* Dropdown-based column selector */}
             <DropdownMenu>
@@ -329,6 +383,57 @@ const UrlDataTable = ({ urls }) => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>
+
+      {/* QR Code Modal */}
+      {showQRModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={() => setShowQRModal(false)}
+        >
+          <div
+            className="bg-white p-6 rounded-lg shadow-2xl max-w-md border-2 border-black"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">QR Code</h3>
+              <button
+                onClick={() => setShowQRModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* QR Code Image */}
+            <div className="flex justify-center mb-4 p-4 bg-white border-2 border-black rounded">
+              <img src={qrCodeDataUrl} alt="QR Code" className="w-64 h-64" />
+            </div>
+
+            {/* URL Display */}
+            <p className="text-sm text-center text-gray-600 mb-4 break-all font-mono bg-gray-100 p-2 rounded border border-gray-300">
+              {currentUrl}
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                onClick={downloadQRCode}
+                className="flex-1"
+              >
+                Download PNG
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowQRModal(false)}
+                className="flex-1"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

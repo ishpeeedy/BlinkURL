@@ -29,7 +29,8 @@ const projects = [
 
 export default function Navbar() {
   return (
-    <NavigationMenu className="z-5">
+    <div  className="flex justify-center w-full">
+      <NavigationMenu className="z-5 bg-main rounded-full">
       <NavigationMenuList>
         <NavigationMenuItem className="sm:block hidden">
           <NavigationMenuTrigger>BlinkURL</NavigationMenuTrigger>
@@ -103,7 +104,8 @@ export default function Navbar() {
           </a>
         </NavigationMenuItem>
       </NavigationMenuList>
-    </NavigationMenu>
+      </NavigationMenu>
+    </div>
   )
 }
 
