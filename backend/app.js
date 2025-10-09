@@ -20,15 +20,18 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.APP_URL,
   'http://localhost:5173', // Local development
-  'http://localhost:3000'
-].filter(Boolean).map(url => url.replace(/\/$/, '')); // Remove trailing slashes
+  'http://localhost:5174', // Local development (alternate port)
+  'http://localhost:3000',
+]
+  .filter(Boolean)
+  .map((url) => url.replace(/\/$/, '')); // Remove trailing slashes
 
 app.use(
   cors({
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps, curl, postman)
       if (!origin) return callback(null, true);
-      
+
       // Check if origin is in whitelist
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);

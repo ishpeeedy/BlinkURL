@@ -49,7 +49,7 @@ const UrlForm = () => {
   };
 
   return (
-    <Card>
+    <Card className="mb-4">
       <CardHeader>
         <CardDescription>Enter the URL you want to shorten</CardDescription>
       </CardHeader>

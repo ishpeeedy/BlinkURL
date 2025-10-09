@@ -274,7 +274,7 @@ const UrlDataTable = ({ urls }) => {
   });
 
   return (
-    <Card className="w-full max-w-4xl mx-auto p-4 mt-4">
+    <Card className="w-full max-w-4xl mx-auto p-4 mb-4">
       <div className="flex pt-1 mb-1 ml-2">
         {/* search bar */}
         <div className="flex w-1/2">

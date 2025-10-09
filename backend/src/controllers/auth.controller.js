@@ -19,8 +19,15 @@ export const login_user = wrapAsync(async (req, res) => {
 });
 
 export const logout_user = wrapAsync(async (req, res) => {
+  console.log('🚀 [BACKEND LOGOUT] Logout request received');
+  console.log('🍪 [BACKEND LOGOUT] Current cookies:', req.cookies);
+  console.log('🔧 [BACKEND LOGOUT] Cookie options:', cookieOptions);
+
   res.clearCookie('accessToken', cookieOptions);
+  console.log('✅ [BACKEND LOGOUT] Cookie cleared');
+
   res.status(200).json({ message: 'logout success' });
+  console.log('✅ [BACKEND LOGOUT] Response sent');
 });
 
 export const get_current_user = wrapAsync(async (req, res) => {

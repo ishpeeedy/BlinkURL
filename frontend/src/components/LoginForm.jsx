@@ -28,18 +28,44 @@ const LoginForm = ({ state }) => {
   console.log(auth);
 
   const handleSubmit = async () => {
+    console.log('🔑 [LOGIN] Starting login process...');
     setLoading(true);
     setError('');
 
     try {
+      console.log('🔑 [LOGIN] Calling loginUser API...');
+      console.log('🔑 [LOGIN] Email:', email);
+      console.log('🔑 [LOGIN] Backend URL:', import.meta.env.VITE_BACKEND_URL);
+
       const data = await loginUser(password, email);
+
+      console.log('✅ [LOGIN] Login successful!', data);
+      console.log('✅ [LOGIN] Dispatching user to Redux...');
+
       dispatch(login(data.user));
+
+      console.log('✅ [LOGIN] Navigating to dashboard...');
       navigate({ to: '/dashboard' });
+
       setLoading(false);
-      console.log('signin success');
+      console.log('✅ [LOGIN] Login complete!');
     } catch (err) {
+      console.error('❌ [LOGIN] Login failed!');
+      console.error('❌ [LOGIN] Error object:', err);
+      console.error('❌ [LOGIN] Error message:', err.message);
+      console.error('❌ [LOGIN] Error response:', err.response);
+      console.error('❌ [LOGIN] Error response data:', err.response?.data);
+      console.error('❌ [LOGIN] Error response status:', err.response?.status);
+
       setLoading(false);
-      setError(err.message || 'Login failed. Please check your credentials.');
+
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        'Login failed. Please check your credentials.';
+      console.error('❌ [LOGIN] Setting error message:', errorMessage);
+
+      setError(errorMessage);
     }
   };
 

@@ -1,10 +1,16 @@
 import axiosInstance from '../utils/axiosInstance';
 
 export const loginUser = async (password, email) => {
+  console.log('🌐 [API] loginUser called');
+  console.log('🌐 [API] Email:', email);
+  console.log('🌐 [API] Calling POST /api/auth/login');
+
   const { data } = await axiosInstance.post('/api/auth/login', {
     email,
     password,
   });
+
+  console.log('✅ [API] loginUser response:', data);
   return data;
 };
 
