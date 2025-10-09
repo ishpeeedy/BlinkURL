@@ -13,6 +13,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 import { createShortUrl } from '../api/shortUrl.api';
 import { useSelector } from 'react-redux';
@@ -39,6 +40,7 @@ const UrlForm = () => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl);
+    toast.success('Short URL copied to clipboard!');
     setCopied(true);
     // Reset the copied state after 2 seconds
     setTimeout(() => {

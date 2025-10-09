@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { deleteShortUrl } from '../api/shortUrl.api';
 import { generateQRCode } from '../utils/qrGenerator.js';
+import { Card } from '@/components/ui/card';
 import {
   useReactTable,
   getCoreRowModel,
@@ -50,6 +51,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { DropdownMenuRadioGroup } from '@radix-ui/react-dropdown-menu';
+import { toast } from 'sonner';
 
 const formatColumnLabel = (id) => {
   if (id === 'full_url') return 'Original URL';
@@ -79,9 +81,9 @@ const UrlDataTable = ({ urls }) => {
         await deleteShortUrl(shortUrl);
         // Invalidate and refetch the URLs query
         queryClient.invalidateQueries(['userUrls']);
-        alert('URL deleted successfully!');
+        toast.success('URL deleted successfully!');
       } catch (error) {
-        alert(`Failed to delete URL: ${error.message}`);
+        toast.info(`Failed to delete URL: ${error.message}`);
       }
     }
   };
@@ -216,6 +218,7 @@ const UrlDataTable = ({ urls }) => {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
                 const shortUrlWithHost = `${backendUrl}/${row.original.short_url}`;
                 navigator.clipboard.writeText(shortUrlWithHost);
+                toast.success('Short URL copied to clipboard!');
               }}
             >
               {' '}
@@ -223,9 +226,10 @@ const UrlDataTable = ({ urls }) => {
               Copy Short URL
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() =>
-                navigator.clipboard.writeText(row.original.full_url)
-              }
+              onClick={() => {
+                navigator.clipboard.writeText(row.original.full_url);
+                toast.success('Original URL copied!');
+              }}
             >
               {' '}
               <ClipboardList className="h-4 w-4" />
@@ -233,7 +237,9 @@ const UrlDataTable = ({ urls }) => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => handleDelete(row.original.short_url)}
+              onClick={() => {
+                handleDelete(row.original.short_url);
+              }}
             >
               {' '}
               <Trash className="h-4 w-4" />
@@ -268,7 +274,7 @@ const UrlDataTable = ({ urls }) => {
   });
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-4 bg-white">
+    <Card className="w-full max-w-4xl mx-auto p-4 mt-4">
       <div className="flex pt-1 mb-1 ml-2">
         {/* search bar */}
         <div className="flex w-1/2">
@@ -277,6 +283,7 @@ const UrlDataTable = ({ urls }) => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search URLs..."
+            className="h-9"
           />
         </div>
         <div className="ml-auto mr-2">
@@ -423,18 +430,11 @@ const UrlDataTable = ({ urls }) => {
               >
                 Download PNG
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowQRModal(false)}
-                className="flex-1"
-              >
-                Close
-              </Button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 
