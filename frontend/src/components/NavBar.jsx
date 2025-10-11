@@ -80,7 +80,7 @@ export default function Navbar() {
       {/* Left side - Navigation items */}
       <NavigationMenu className="flex-1">
         <NavigationMenuList className="flex items-center gap-1">
-          <NavigationMenuItem className="sm:block hidden">
+          <NavigationMenuItem>
             <NavigationMenuTrigger className="border-none bg-main">
               BlinkURL
             </NavigationMenuTrigger>
@@ -95,7 +95,7 @@ export default function Navbar() {
                       rel="noopener noreferrer"
                     >
                       <div className="mb-2 mt-4 text-lg font-heading">
-                        BlinkURL
+                        Github Repo
                       </div>
                       <p className="text-sm font-base leading-tight">
                         Modern URL shortener with comprehensive analytics. Track
@@ -120,7 +120,7 @@ export default function Navbar() {
 
           <NavigationMenuItem>
             <NavigationMenuTrigger className="border-none bg-main">
-              Projects
+              More !
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid w-[400px] gap-3 p-2 md:w-[500px] md:grid-cols-2 bg-main">
@@ -141,23 +141,6 @@ export default function Navbar() {
                 </ListItem>
               </ul>
             </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <a
-              href="https://github.com/ishpeeedy/BlinkURL"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <NavigationMenuLink
-                className={cn(
-                  navigationMenuTriggerStyle(),
-                  'bg-main text-black border-0 hover:bg-main/90'
-                )}
-              >
-                GitHub
-              </NavigationMenuLink>
-            </a>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
