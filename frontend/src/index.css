@@ -19,6 +19,12 @@
   --chart-4: #ff7a05;
   --chart-5: #0099ff;
   --chart-active-dot: #000;
+  --muted1: #daf5f0;
+  --muted2: #b5d2ad;
+  --muted3: #fdfd96;
+  --muted4: #f8d6b3;
+  --muted5: #fcdfff;
+  --muted6: #e3dff2;
 }
 
 .dark {

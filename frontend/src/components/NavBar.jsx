@@ -161,7 +161,7 @@ export default function Navbar() {
             variant="noShadow"
             className="bg-main hover:bg-main/90 text-black cursor-pointer border-none ml-4"
           >
-            Login / Sign Up
+            Login | Sign Up
           </Button>
         </Link>
       )}

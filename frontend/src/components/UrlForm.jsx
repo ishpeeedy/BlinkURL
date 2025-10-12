@@ -26,7 +26,6 @@ const UrlForm = () => {
   const [error, setError] = useState(null);
   const [customSlug, setCustomSlug] = useState('');
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
   const handleSubmit = async () => {
     try {
       const shortUrl = await createShortUrl(url, customSlug);
@@ -40,16 +39,20 @@ const UrlForm = () => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shortUrl);
-    toast.success('Short URL copied to clipboard!');
+    toast.success('Short URL copied to clipboard!', {
+      style: {
+        background: 'var(--muted3)',
+        color: 'var(--foreground)',
+      },
+    });
     setCopied(true);
-    // Reset the copied state after 2 seconds
     setTimeout(() => {
       setCopied(false);
     }, 1000);
   };
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4" style={{ backgroundColor: 'var(--background)' }}>
       <CardHeader>
         <CardDescription>Enter the URL you want to shorten</CardDescription>
       </CardHeader>

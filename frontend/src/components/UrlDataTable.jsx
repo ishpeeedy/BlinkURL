@@ -81,9 +81,19 @@ const UrlDataTable = ({ urls }) => {
         await deleteShortUrl(shortUrl);
         // Invalidate and refetch the URLs query
         queryClient.invalidateQueries(['userUrls']);
-        toast.success('URL deleted successfully!');
+        toast.success('URL deleted successfully!', {
+          style: {
+            background: 'var(--muted3)',
+            color: 'var(--foreground)',
+          },
+        });
       } catch (error) {
-        toast.info(`Failed to delete URL: ${error.message}`);
+        toast.error(`Failed to delete URL: ${error.message}`, {
+          style: {
+            background: 'var(--muted3)',
+            color: 'var(--foreground)',
+          },
+        });
       }
     }
   };
@@ -218,7 +228,12 @@ const UrlDataTable = ({ urls }) => {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
                 const shortUrlWithHost = `${backendUrl}/${row.original.short_url}`;
                 navigator.clipboard.writeText(shortUrlWithHost);
-                toast.success('Short URL copied to clipboard!');
+                toast.success('Short URL copied to clipboard!', {
+                  style: {
+                    background: 'var(--muted3)',
+                    color: 'var(--foreground)',
+                  },
+                });
               }}
             >
               {' '}
@@ -228,7 +243,12 @@ const UrlDataTable = ({ urls }) => {
             <DropdownMenuItem
               onClick={() => {
                 navigator.clipboard.writeText(row.original.full_url);
-                toast.success('Original URL copied!');
+                toast.success('Original URL copied!', {
+                  style: {
+                    background: 'var(--muted3)',
+                    color: 'var(--foreground)',
+                  },
+                });
               }}
             >
               {' '}
