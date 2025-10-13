@@ -76,95 +76,97 @@ export default function Navbar() {
   };
 
   return (
-    <div className="bg-main flex justify-between items-center mx-auto rounded-sm mb-4 max-w-4xl">
-      {/* Left side - Navigation items */}
-      <NavigationMenu className="flex-1">
-        <NavigationMenuList className="flex items-center gap-1">
-          <NavigationMenuItem>
-            <NavigationMenuTrigger className="border-none bg-main">
-              BlinkURL
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[500px] gap-3 p-2 lg:grid-cols-[.75fr_1fr]">
-                <li className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <a
-                      className="flex h-full w-full select-none flex-col justify-end rounded-base p-6 no-underline outline-hidden bg-gradient-to-b from-main/50 to-main"
-                      href="https://github.com/ishpeeedy/BlinkURL"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <div className="mb-2 mt-4 text-lg font-heading">
-                        Github Repo
-                      </div>
-                      <p className="text-sm font-base leading-tight">
-                        Modern URL shortener with comprehensive analytics. Track
-                        clicks, monitor traffic, and gain insights into your
-                        audience.
-                      </p>
-                    </a>
-                  </NavigationMenuLink>
-                </li>
-                <ListItem href="/" title="Home" internal>
-                  Create and shorten URLs instantly
-                </ListItem>
-                <ListItem href="/dashboard" title="Dashboard" internal>
-                  View and manage all your shortened URLs
-                </ListItem>
-                <ListItem href="/auth" title="Login / Sign Up" internal>
-                  Create an account for custom URLs and analytics
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <NavigationMenuTrigger className="border-none bg-main">
-              More !
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-2 md:w-[500px] md:grid-cols-2 bg-main">
-                {projects.map((project) => (
-                  <ListItem
-                    key={project.title}
-                    title={project.title}
-                    href={project.href}
-                  >
-                    {project.description}
+    <div className="w-full bg-main mb-4">
+      <div className="bg-main flex justify-between items-center mx-auto rounded-sm mb-4 max-w-4xl">
+        {/* Left side - Navigation items */}
+        <NavigationMenu className="flex-1">
+          <NavigationMenuList className="flex items-center gap-1">
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="border-none bg-main">
+                BlinkURL
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[500px] gap-3 p-2 lg:grid-cols-[.75fr_1fr]">
+                  <li className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <a
+                        className="flex h-full w-full select-none flex-col justify-end rounded-base p-6 no-underline outline-hidden bg-gradient-to-b from-main/50 to-main"
+                        href="https://github.com/ishpeeedy/BlinkURL"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <div className="mb-2 mt-4 text-lg font-heading">
+                          Github Repo
+                        </div>
+                        <p className="text-sm font-base leading-tight">
+                          Modern URL shortener with comprehensive analytics.
+                          Track clicks, monitor traffic, and gain insights into
+                          your audience.
+                        </p>
+                      </a>
+                    </NavigationMenuLink>
+                  </li>
+                  <ListItem href="/" title="Home" internal>
+                    Create and shorten URLs instantly
                   </ListItem>
-                ))}
-                <ListItem
-                  title="More Projects"
-                  href="https://github.com/ishpeeedy"
-                >
-                  View all my projects on GitHub
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+                  <ListItem href="/dashboard" title="Dashboard" internal>
+                    View and manage all your shortened URLs
+                  </ListItem>
+                  <ListItem href="/auth" title="Login / Sign Up" internal>
+                    Create an account for custom URLs and analytics
+                  </ListItem>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
 
-      {/* Right side - Auth Button */}
-      {isAuthenticated ? (
-        <Button
-          variant="noShadow"
-          onClick={handleLogout}
-          className="bg-main hover:bg-main/90 text-black cursor-pointer border-none ml-4"
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Logout
-        </Button>
-      ) : (
-        <Link to="/auth">
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="border-none bg-main">
+                More !
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-2 md:w-[500px] md:grid-cols-2 bg-main">
+                  {projects.map((project) => (
+                    <ListItem
+                      key={project.title}
+                      title={project.title}
+                      href={project.href}
+                    >
+                      {project.description}
+                    </ListItem>
+                  ))}
+                  <ListItem
+                    title="More Projects"
+                    href="https://github.com/ishpeeedy"
+                  >
+                    View all my projects on GitHub
+                  </ListItem>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+
+        {/* Right side - Auth Button */}
+        {isAuthenticated ? (
           <Button
             variant="noShadow"
+            onClick={handleLogout}
             className="bg-main hover:bg-main/90 text-black cursor-pointer border-none ml-4"
           >
-            Login | Sign Up
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
           </Button>
-        </Link>
-      )}
+        ) : (
+          <Link to="/auth">
+            <Button
+              variant="noShadow"
+              className="bg-main hover:bg-main/90 text-black cursor-pointer border-none ml-4"
+            >
+              Login | Sign Up
+            </Button>
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { Outlet } from '@tanstack/react-router';
 import Navbar from './components/NavBar';
+import Footer from './components/Footer';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { getCurrentUser } from './api/user.api';
@@ -37,6 +38,7 @@ const RootLayout = () => {
     <>
       <Navbar />
       <Outlet />
+      <Footer />
       <Toaster />
     </>
   );

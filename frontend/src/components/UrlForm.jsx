@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, ClipboardCopy, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -103,13 +103,24 @@ const UrlForm = () => {
               <Button
                 variant="noShadow"
                 onClick={handleCopy}
-                className={`px-4 py-2 rounded-r-md transition-colors duration-500 ${
-                  copied
-                    ? 'bg-green-500 text-white hover:bg-green-600'
-                    : 'bg-gray-200 hover:bg-gray-300'
+                className={`px-2 py-2 transition-colors duration-500 ${
+                  copied ? '' : ''
                 }`}
+                style={{
+                  backgroundColor: copied ? 'var(--muted3)' : '',
+                }}
               >
-                {copied ? 'Copied!' : 'Copy'}
+                {copied ? (
+                  <>
+                    <ClipboardCheck />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <ClipboardCopy />
+                    Copy
+                  </>
+                )}
               </Button>
             </div>
           </div>
