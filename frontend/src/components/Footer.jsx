@@ -5,11 +5,21 @@ const Footer = () => {
       <div className="max-w-4xl mx-auto py-4">
         <div className="flex justify-between items-center">
           <p className="text-center text-sm text-main-foreground">
-            <a href="https://github.com/ishpeeedy/BlinkURL">BlinkURL</a>. All
-            rights reserved.
+            {' '}
+            <a href="https://github.com/ishpeeedy/BlinkURL" class="underline">
+              <span>BlinkURL Github Repository</span>
+              <svg viewBox="0 0 13 20">
+                <polyline points="0.5 19.5 3 19.5 12.5 10 3 0.5" />
+              </svg>
+            </a>
           </p>
           <p className="text-center text-sm text-main-foreground">
-            Made with 🖤 by <a href="https://github.com/ishpeeedy">ishpeeedy</a>
+            <a href="https://github.com/ishpeeedy" class="underline">
+              <span>Made with 🖤 by ishpeeedy</span>
+              <svg viewBox="0 0 13 20">
+                <polyline points="0.5 19.5 3 19.5 12.5 10 3 0.5" />
+              </svg>
+            </a>
           </p>
         </div>
       </div>
