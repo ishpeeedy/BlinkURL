@@ -21,9 +21,10 @@ const HomePage = () => {
             </h1>
 
             <p className="text-lg ">
-              Smarter links for modern creators and businesses. Create short
-              links, analyze clicks, generate QR codes, and detect suspicious
-              traffic — all in one dashboard.
+              Transform your long URLs into powerful, trackable short links.
+              BlinkURL empowers you to create custom branded links, monitor
+              engagement in real-time, and gain valuable insights into your
+              audience's behavior.
             </p>
 
             {/* Cipher Animation Demo */}
@@ -68,12 +69,10 @@ const HomePage = () => {
               Share
             </h1>
             <p className="text-lg ">
-              Smarter links for modern creators and businesses. Create short
-              links, analyze clicks, generate QR codes, and detect suspicious
-              traffic — all in one dashboard.
-              <a href="https://storyset.com/technology">
-                Technology illustrations by Storyset
-              </a>
+              Reach your audience everywhere with instant QR code generation.
+              Perfect for print materials, social media, or presentations —
+              share your shortened links across any platform with ease. Each QR
+              code is automatically generated for every link you create.
             </p>
           </Card>
         </div>
@@ -93,12 +92,11 @@ const HomePage = () => {
               Analyse
             </h1>
             <p className="text-lg ">
-              Smarter links for modern creators and businesses. Create short
-              links, analyze clicks, generate QR codes, and detect suspicious
-              traffic — all in one dashboard.
-              <a href="https://storyset.com/business">
-                Business illustrations by Storyset
-              </a>
+              Dive deep into your link performance with comprehensive analytics.
+              Track total clicks, unique visitors, geographic locations,
+              devices, peak times and browsers. Identify traffic patterns and
+              detect suspicious activity to protect your brand and optimize your
+              marketing strategy.
             </p>
           </Card>
 
