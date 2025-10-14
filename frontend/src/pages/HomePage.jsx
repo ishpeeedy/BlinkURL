@@ -94,9 +94,9 @@ const HomePage = () => {
             <p className="text-lg ">
               Dive deep into your link performance with comprehensive analytics.
               Track total clicks, unique visitors, geographic locations,
-              devices, peak times and browsers. Identify traffic patterns and
-              detect suspicious activity to protect your brand and optimize your
-              marketing strategy.
+              devices, browsers and time based analytics. Identify traffic
+              patterns and detect suspicious activity to protect your brand and
+              optimize your marketing strategy.
             </p>
           </Card>
 
