@@ -25,6 +25,7 @@
 - [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [Contact](#contact)
+- [Acknowledgments](#acknowledgments)
 
 ---
 
@@ -418,7 +419,7 @@ The system will:
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
 hav eto figure out the img hosting for this one
 
