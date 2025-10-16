@@ -1,14 +1,12 @@
-# BlinkURL 🔗
+# BlinkURL
 
 <div align="center">
-
-![BlinkURL Banner](https://img.shields.io/badge/BlinkURL-URL_Shortener-blue?style=for-the-badge)
-[![Made with Love](https://img.shields.io/badge/Made%20with-🖤-black?style=for-the-badge)](https://github.com/ishpeeedy)
-
-**Transform your long URLs into powerful, trackable short links**
-
-[Features](#-features) • [Tech Stack](#️-tech-stack) • [Installation](#-installation) • [Usage](#-usage) • [Contributing](#-contributing)
-
+<a href="https://blinkurl-ppd2.onrender.com/"> 
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=28&duration=1000&pause=000&color=ca7aff&center=true&vCenter=true&multiline=true&repeat=false&width=600&height=100&lines=Transform+Long+URLs;Into+Trackable+Short+Links" alt="Typing Animation" />
+</a>
+<a href="https://blinkurl-ppd2.onrender.com/"> 
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=16&duration=10&pause=2000&color=fdfd96&center=true&vCenter=true&multiline=false&repeat=false&width=600&height=100&lines=Click+here+to+check+it+out!" alt="Typing Animation" />
+</a>
 </div>
 
 ---
@@ -61,7 +59,6 @@ Whether you're a content creator, marketer, or business owner, BlinkURL provides
 - **🎨 Modern UI**: Beautiful, responsive design with Tailwind CSS
 - **⚡ Fast Performance**: Optimized with Vite and React 19
 - **📱 Mobile Responsive**: Seamless experience across all devices
-- **🎭 Smooth Animations**: Enhanced UX with cipher text animations
 
 ---
 
