@@ -14,7 +14,7 @@ const Footer = () => {
           <p className="text-center text-sm text-main-foreground">
             {' '}
             <a href="https://github.com/ishpeeedy/BlinkURL" class="underline">
-              <span>BlinkURL Github Repository</span>
+              <span>BlinkURL Repo</span>
               <svg viewBox="0 0 13 20">
                 <polyline points="0.5 19.5 3 19.5 12.5 10 3 0.5" />
               </svg>

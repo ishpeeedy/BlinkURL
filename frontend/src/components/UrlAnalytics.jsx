@@ -1,10 +1,24 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { getUrlAnalytics } from '../api/shortUrl.api';
-import { TrendingUp, ChevronDown } from "lucide-react";
-import { Label, Pie, PieChart, Bar, BarChart, CartesianGrid, XAxis, Area, AreaChart } from "recharts";
-
-
+import {
+  TrendingUp,
+  ChevronDown,
+  ClipboardCopy,
+  ClipboardCheck,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  Label,
+  Pie,
+  PieChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  Area,
+  AreaChart,
+} from 'recharts';
 
 import {
   Card,
@@ -13,21 +27,22 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-} from "@/components/ui/chart";
+} from '@/components/ui/chart';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const UrlAnalytics = () => {
   const params = useParams({ from: '/analytics/$id' });
@@ -35,19 +50,31 @@ const UrlAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [timeRange, setTimeRange] = useState("30d");
+  const [timeRange, setTimeRange] = useState('30d');
   const [copiedShort, setCopiedShort] = useState(false);
   const [copiedOriginal, setCopiedOriginal] = useState(false);
 
   const handleCopyShort = () => {
     const shortUrlFull = `${import.meta.env.VITE_BACKEND_URL}/${analytics?.urlId || id}`;
     navigator.clipboard.writeText(shortUrlFull);
+    toast.success('Short URL copied to clipboard!', {
+      style: {
+        background: 'var(--muted3)',
+        color: 'var(--foreground)',
+      },
+    });
     setCopiedShort(true);
     setTimeout(() => setCopiedShort(false), 1000);
   };
 
   const handleCopyOriginal = () => {
     navigator.clipboard.writeText(analytics?.originalUrl || '');
+    toast.success('Original URL copied to clipboard!', {
+      style: {
+        background: 'var(--muted3)',
+        color: 'var(--foreground)',
+      },
+    });
     setCopiedOriginal(true);
     setTimeout(() => setCopiedOriginal(false), 1000);
   };
@@ -81,34 +108,40 @@ const UrlAnalytics = () => {
   // Transform browser data for chart
   const browserData = useMemo(() => {
     if (!analytics?.byBrowser) return [];
-    
-    const colors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
+
+    const colors = [
+      'var(--chart-1)',
+      'var(--chart-2)',
+      'var(--chart-3)',
+      'var(--chart-4)',
+      'var(--chart-5)',
+    ];
     return analytics.byBrowser.map((item, index) => ({
       browser: item._id || 'Unknown',
       visitors: item.count,
-      fill: colors[index % colors.length]
+      fill: colors[index % colors.length],
     }));
   }, [analytics]);
 
   // Transform country data for chart
   const countryData = useMemo(() => {
     if (!analytics?.byCountry) return [];
-    
+
     return analytics.byCountry.map((item) => ({
       country: item._id || 'Unknown',
-      clicks: item.count
+      clicks: item.count,
     }));
   }, [analytics]);
 
   // Transform device data for chart
   const deviceData = useMemo(() => {
     if (!analytics?.byDevice) return [];
-    
-    const colors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)"];
+
+    const colors = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)'];
     return analytics.byDevice.map((item, index) => ({
       device: item._id || 'Unknown',
       visitors: item.count,
-      fill: colors[index % colors.length]
+      fill: colors[index % colors.length],
     }));
   }, [analytics]);
 
@@ -119,30 +152,36 @@ const UrlAnalytics = () => {
   // Transform OS data for chart
   const osData = useMemo(() => {
     if (!analytics?.byOS) return [];
-    
-    const colors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
+
+    const colors = [
+      'var(--chart-1)',
+      'var(--chart-2)',
+      'var(--chart-3)',
+      'var(--chart-4)',
+      'var(--chart-5)',
+    ];
     return analytics.byOS.map((item, index) => ({
       os: item._id || 'Unknown',
       visitors: item.count,
-      fill: colors[index % colors.length]
+      fill: colors[index % colors.length],
     }));
   }, [analytics]);
 
   // Transform unique vs repeat visitors data
   const visitorTypeData = useMemo(() => {
     if (!analytics) return [];
-    
+
     return [
-      { 
-        type: 'Unique Visitors', 
+      {
+        type: 'Unique Visitors',
         count: analytics.uniqueVisitors || 0,
-        fill: "var(--chart-1)"
+        fill: 'var(--chart-1)',
       },
-      { 
-        type: 'Repeat Visitors', 
+      {
+        type: 'Repeat Visitors',
         count: analytics.repeatVisitors || 0,
-        fill: "var(--chart-2)"
-      }
+        fill: 'var(--chart-2)',
+      },
     ];
   }, [analytics]);
 
@@ -154,48 +193,48 @@ const UrlAnalytics = () => {
   // Clicks over time data (with timeframe filtering)
   const clicksOverTimeData = useMemo(() => {
     if (!analytics?.clicksOverTime) return [];
-    
+
     const now = new Date();
     let daysToSubtract = 30;
-    if (timeRange === "7d") daysToSubtract = 7;
-    else if (timeRange === "90d") daysToSubtract = 90;
-    
+    if (timeRange === '7d') daysToSubtract = 7;
+    else if (timeRange === '90d') daysToSubtract = 90;
+
     const startDate = new Date(now);
     startDate.setDate(startDate.getDate() - daysToSubtract);
-    
+
     return analytics.clicksOverTime
-      .filter(item => new Date(item._id) >= startDate)
-      .map(item => ({
+      .filter((item) => new Date(item._id) >= startDate)
+      .map((item) => ({
         date: item._id,
-        clicks: item.count
+        clicks: item.count,
       }));
   }, [analytics, timeRange]);
 
   // Clicks by hour of day
   const clicksByHourData = useMemo(() => {
     if (!analytics?.byHourOfDay) return [];
-    
-    return analytics.byHourOfDay.map(item => ({
+
+    return analytics.byHourOfDay.map((item) => ({
       hour: `${item._id}:00`,
-      clicks: item.count
+      clicks: item.count,
     }));
   }, [analytics]);
 
   // Clicks by day of week with device breakdown
   const clicksByDayOfWeekData = useMemo(() => {
     if (!analytics?.byDayOfWeekWithDevice) return [];
-    
+
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return analytics.byDayOfWeekWithDevice.map(item => {
+    return analytics.byDayOfWeekWithDevice.map((item) => {
       const dayData = {
         day: dayNames[item._id - 1] || 'Unknown',
         mobile: 0,
         desktop: 0,
-        tablet: 0
+        tablet: 0,
       };
-      
+
       // Aggregate counts by device type
-      item.devices.forEach(deviceItem => {
+      item.devices.forEach((deviceItem) => {
         const deviceType = (deviceItem.device || 'desktop').toLowerCase();
         if (deviceType === 'mobile') {
           dayData.mobile += deviceItem.count;
@@ -205,58 +244,58 @@ const UrlAnalytics = () => {
           dayData.desktop += deviceItem.count;
         }
       });
-      
+
       return dayData;
     });
   }, [analytics]);
 
   const browserChartConfig = {
-    visitors: { label: "Visitors" },
-    chrome: { label: "Chrome", color: "var(--chart-1)" },
-    safari: { label: "Safari", color: "var(--chart-2)" },
-    firefox: { label: "Firefox", color: "var(--chart-3)" },
-    edge: { label: "Edge", color: "var(--chart-4)" },
-    other: { label: "Other", color: "var(--chart-5)" },
+    visitors: { label: 'Visitors' },
+    chrome: { label: 'Chrome', color: 'var(--chart-1)' },
+    safari: { label: 'Safari', color: 'var(--chart-2)' },
+    firefox: { label: 'Firefox', color: 'var(--chart-3)' },
+    edge: { label: 'Edge', color: 'var(--chart-4)' },
+    other: { label: 'Other', color: 'var(--chart-5)' },
   };
 
   const countryChartConfig = {
-    clicks: { label: "Clicks", color: "var(--chart-1)" },
+    clicks: { label: 'Clicks', color: 'var(--chart-1)' },
   };
 
   const deviceChartConfig = {
-    visitors: { label: "Visitors" },
-    desktop: { label: "Desktop", color: "var(--chart-1)" },
-    mobile: { label: "Mobile", color: "var(--chart-2)" },
-    tablet: { label: "Tablet", color: "var(--chart-3)" },
+    visitors: { label: 'Visitors' },
+    desktop: { label: 'Desktop', color: 'var(--chart-1)' },
+    mobile: { label: 'Mobile', color: 'var(--chart-2)' },
+    tablet: { label: 'Tablet', color: 'var(--chart-3)' },
   };
 
   const osChartConfig = {
-    visitors: { label: "Visitors" },
-    windows: { label: "Windows", color: "var(--chart-1)" },
-    macos: { label: "macOS", color: "var(--chart-2)" },
-    linux: { label: "Linux", color: "var(--chart-3)" },
-    android: { label: "Android", color: "var(--chart-4)" },
-    ios: { label: "iOS", color: "var(--chart-5)" },
+    visitors: { label: 'Visitors' },
+    windows: { label: 'Windows', color: 'var(--chart-1)' },
+    macos: { label: 'macOS', color: 'var(--chart-2)' },
+    linux: { label: 'Linux', color: 'var(--chart-3)' },
+    android: { label: 'Android', color: 'var(--chart-4)' },
+    ios: { label: 'iOS', color: 'var(--chart-5)' },
   };
 
   const visitorTypeConfig = {
-    count: { label: "Visitors" },
-    unique: { label: "Unique", color: "var(--chart-1)" },
-    repeat: { label: "Repeat", color: "var(--chart-2)" },
+    count: { label: 'Visitors' },
+    unique: { label: 'Unique', color: 'var(--chart-1)' },
+    repeat: { label: 'Repeat', color: 'var(--chart-2)' },
   };
 
   const timeSeriesConfig = {
-    clicks: { label: "Clicks", color: "var(--chart-1)" },
+    clicks: { label: 'Clicks', color: 'var(--chart-1)' },
   };
 
   const hourlyConfig = {
-    clicks: { label: "Clicks", color: "var(--chart-2)" },
+    clicks: { label: 'Clicks', color: 'var(--chart-2)' },
   };
 
   const weekdayConfig = {
-    mobile: { label: "Mobile", color: "var(--chart-2)" },
-    desktop: { label: "Desktop", color: "var(--chart-1)" },
-    tablet: { label: "Tablet", color: "var(--chart-3)" },
+    mobile: { label: 'Mobile', color: 'var(--chart-2)' },
+    desktop: { label: 'Desktop', color: 'var(--chart-1)' },
+    tablet: { label: 'Tablet', color: 'var(--chart-3)' },
   };
 
   if (loading) {
@@ -279,71 +318,102 @@ const UrlAnalytics = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">URL Analytics for: {id}</h1>
-      
       {/* URL Details Card */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>URL Details</CardTitle>
-          <CardDescription>Information about this shortened URL</CardDescription>
+          <CardTitle> URL Analytics for: {id}</CardTitle>
+          <CardDescription>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Link created:{' '}
+                {analytics?.createdAt
+                  ? new Date(analytics.createdAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                  : 'N/A'}
+              </p>
+            </div>
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className=" gap-4">
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Short URL</p>
-              <div className="flex gap-2">
-                <p className="text-sm font-mono bg-muted px-3 py-2 rounded border-2 border-black break-all flex-1">
-                  {import.meta.env.VITE_BACKEND_URL}/{analytics?.urlId || id}
-                </p>
+              <p className="text-sm font-medium text-muted-foreground mb-1">
+                Short URL
+              </p>
+              <div className="flex">
+                <Input
+                  type="text"
+                  readOnly
+                  value={`${import.meta.env.VITE_BACKEND_URL}/${analytics?.urlId || id}`}
+                />
                 <Button
                   variant="noShadow"
                   onClick={handleCopyShort}
-                  className={`px-4 py-2 rounded transition-colors duration-500 ${
-                    copiedShort
-                      ? 'bg-green-500 text-white hover:bg-green-600'
-                      : 'bg-gray-200 hover:bg-gray-300'
+                  className={`px-2 py-2 transition-colors duration-500 ${
+                    copiedShort ? '' : ''
                   }`}
+                  style={{
+                    backgroundColor: copiedShort ? 'var(--muted3)' : '',
+                  }}
                 >
-                  {copiedShort ? 'Copied!' : 'Copy'}
+                  {copiedShort ? (
+                    <>
+                      <ClipboardCheck />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <ClipboardCopy />
+                      Copy
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Created</p>
-              <p className="text-sm px-3 py-2">
-                {analytics?.createdAt ? new Date(analytics.createdAt).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }) : 'N/A'}
-              </p>
-            </div>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground mb-1">Original URL</p>
-            <div className="flex gap-2">
-              <p className="text-sm font-mono bg-muted px-3 py-2 rounded border-2 border-black break-all flex-1">
-                {analytics?.originalUrl || 'Loading...'}
-              </p>
+            <p className="text-sm font-medium text-muted-foreground mb-1">
+              Original URL
+            </p>
+            <div className="flex">
+              <Input
+                type="text"
+                readOnly
+                value={analytics?.originalUrl || 'Loading...'}
+              />
               <Button
                 variant="noShadow"
                 onClick={handleCopyOriginal}
                 disabled={!analytics?.originalUrl}
-                className={`px-4 py-2 rounded transition-colors duration-500 ${
-                  copiedOriginal
-                    ? 'bg-green-500 text-white hover:bg-green-600'
-                    : 'bg-gray-200 hover:bg-gray-300'
+                className={`px-2 py-2 transition-colors duration-500 ${
+                  copiedOriginal ? '' : ''
                 }`}
+                style={{
+                  backgroundColor: copiedOriginal ? 'var(--muted3)' : '',
+                }}
               >
-                {copiedOriginal ? 'Copied!' : 'Copy'}
+                {copiedOriginal ? (
+                  <>
+                    <ClipboardCheck />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <ClipboardCopy />
+                    Copy
+                  </>
+                )}
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Total Clicks Card */}
         <Card className="flex flex-col">
@@ -382,7 +452,7 @@ const UrlAnalytics = () => {
                   >
                     <Label
                       content={({ viewBox }) => {
-                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
                           return (
                             <text
                               x={viewBox.cx}
@@ -549,7 +619,8 @@ const UrlAnalytics = () => {
                 Engagement Analytics <TrendingUp className="h-4 w-4" />
               </div>
               <div className="text-muted-foreground leading-none">
-                {analytics?.uniqueVisitors || 0} unique visitors out of {totalClicks} total clicks
+                {analytics?.uniqueVisitors || 0} unique visitors out of{' '}
+                {totalClicks} total clicks
               </div>
             </CardFooter>
           </Card>
@@ -559,7 +630,9 @@ const UrlAnalytics = () => {
         {suspiciousIPs.length > 0 && (
           <Card className="flex flex-col lg:col-span-3 border-orange-500 bg-orange-50">
             <CardHeader className="pb-3">
-              <CardTitle className="text-orange-700">⚠️ Suspicious Activity Detected</CardTitle>
+              <CardTitle className="text-orange-700">
+                ⚠️ Suspicious Activity Detected
+              </CardTitle>
               <CardDescription className="text-orange-600">
                 High-frequency clicks from the same IP addresses
               </CardDescription>
@@ -567,19 +640,25 @@ const UrlAnalytics = () => {
             <CardContent>
               <div className="space-y-2">
                 {suspiciousIPs.slice(0, 5).map((item, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="flex justify-between items-center p-3 bg-white rounded-md border border-orange-200"
                   >
                     <div className="flex-1">
-                      <span className="font-mono text-sm font-semibold">{item._id}</span>
+                      <span className="font-mono text-sm font-semibold">
+                        {item._id}
+                      </span>
                       <span className="text-xs text-muted-foreground ml-2">
                         ({item.locations?.join(', ') || 'Unknown'})
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-orange-600">{item.count}</span>
-                      <span className="text-xs text-muted-foreground">clicks</span>
+                      <span className="text-2xl font-bold text-orange-600">
+                        {item.count}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        clicks
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -587,7 +666,8 @@ const UrlAnalytics = () => {
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
               <div className="text-orange-600 leading-none">
-                {suspiciousIPs.length} IP{suspiciousIPs.length > 1 ? 's' : ''} with 10+ clicks detected
+                {suspiciousIPs.length} IP{suspiciousIPs.length > 1 ? 's' : ''}{' '}
+                with 10+ clicks detected
               </div>
             </CardFooter>
           </Card>
@@ -599,25 +679,27 @@ const UrlAnalytics = () => {
             <CardHeader className="flex items-center sm:gap-2 gap-4 space-y-0 sm:flex-row flex-col">
               <div className="grid flex-1 gap-1 text-center sm:text-left">
                 <CardTitle>Clicks Over Time</CardTitle>
-                <CardDescription>
-                  Traffic trends and patterns
-                </CardDescription>
+                <CardDescription>Traffic trends and patterns</CardDescription>
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-[160px] sm:ml-auto">
-                    {timeRange === "7d" ? "Last 7 days" : timeRange === "30d" ? "Last 30 days" : "Last 90 days"}
+                    {timeRange === '7d'
+                      ? 'Last 7 days'
+                      : timeRange === '30d'
+                        ? 'Last 30 days'
+                        : 'Last 90 days'}
                     <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setTimeRange("7d")}>
+                  <DropdownMenuItem onClick={() => setTimeRange('7d')}>
                     Last 7 days
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTimeRange("30d")}>
+                  <DropdownMenuItem onClick={() => setTimeRange('30d')}>
                     Last 30 days
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTimeRange("90d")}>
+                  <DropdownMenuItem onClick={() => setTimeRange('90d')}>
                     Last 90 days
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -638,9 +720,9 @@ const UrlAnalytics = () => {
                     minTickGap={32}
                     tickFormatter={(value) => {
                       const date = new Date(value);
-                      return date.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
+                      return date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
                       });
                     }}
                   />
@@ -649,10 +731,10 @@ const UrlAnalytics = () => {
                     content={
                       <ChartTooltipContent
                         labelFormatter={(value) => {
-                          return new Date(value).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
+                          return new Date(value).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
                           });
                         }}
                         indicator="dot"
@@ -758,9 +840,12 @@ const UrlAnalytics = () => {
                         hideLabel
                         className="w-[180px]"
                         formatter={(value, name, item, index) => {
-                          const total = (item.payload.desktop || 0) + (item.payload.mobile || 0) + (item.payload.tablet || 0);
+                          const total =
+                            (item.payload.desktop || 0) +
+                            (item.payload.mobile || 0) +
+                            (item.payload.tablet || 0);
                           const isLastItem = index === 2; // tablet is last (index 2)
-                          
+
                           return (
                             <>
                               <div
@@ -772,14 +857,18 @@ const UrlAnalytics = () => {
                               {weekdayConfig[name]?.label || name}
                               <div className="text-foreground ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums">
                                 {value}
-                                <span className="text-muted-foreground font-normal">clicks</span>
+                                <span className="text-muted-foreground font-normal">
+                                  clicks
+                                </span>
                               </div>
                               {isLastItem && total > 0 && (
                                 <div className="text-foreground mt-1.5 flex basis-full items-center border-t pt-1.5 text-xs font-medium">
                                   Total
                                   <div className="text-foreground ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums">
                                     {total}
-                                    <span className="text-muted-foreground font-normal">clicks</span>
+                                    <span className="text-muted-foreground font-normal">
+                                      clicks
+                                    </span>
                                   </div>
                                 </div>
                               )}
