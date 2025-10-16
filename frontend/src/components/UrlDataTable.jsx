@@ -243,7 +243,7 @@ const UrlDataTable = ({ urls }) => {
             <DropdownMenuItem
               onClick={() => {
                 navigator.clipboard.writeText(row.original.full_url);
-                toast.success('Original URL copied!', {
+                toast.success('Original URL copied to clipboard!', {
                   style: {
                     background: 'var(--muted3)',
                     color: 'var(--foreground)',

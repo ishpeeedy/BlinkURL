@@ -30,7 +30,7 @@ const HomePage = () => {
             <div className="rounded-lg p-6 font-mono border-4">
               <CipherText
                 longText="https://www.example.com/a/very/long/url//that/needs/shorten..."
-                shortText="blnk.io/smallURL"
+                shortText="https://blinkurl-yewx.onrender.com/shrtURL"
                 className=" text-lg md:text-xl"
               />
             </div>
