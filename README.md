@@ -7,7 +7,7 @@
 
 **Transform your long URLs into powerful, trackable short links**
 
-[Features](#features) • [Tech Stack](#tech-stack) • [Installation](#installation) • [Usage](#usage) • [Contributing](#contributing)
+[Features](#-features) • [Tech Stack](#️-tech-stack) • [Installation](#-installation) • [Usage](#-usage) • [Contributing](#-contributing)
 
 </div>
 
@@ -15,17 +15,17 @@
 
 ## 📋 Table of Contents
 
-- [About](#about)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Environment Variables](#environment-variables)
-- [Usage](#usage)
-- [Screenshots](#screenshots)
-- [Contributing](#contributing)
-- [Contact](#contact)
-- [Acknowledgments](#acknowledgments)
+- [About](#-about)
+- [Features](#-features)
+- [Tech Stack](#️-tech-stack)
+- [Project Structure](#-project-structure)
+- [Installation](#-installation)
+- [Environment Variables](#-environment-variables)
+- [Usage](#-usage)
+- [Screenshots](#-screenshots)
+- [Contributing](#-contributing)
+- [Contact](#-contact)
+- [Acknowledgments](#-acknowledgments)
 
 ---
 

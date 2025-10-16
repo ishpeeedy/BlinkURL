@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { getUrlAnalytics } from '../api/shortUrl.api';
-import {
-  TrendingUp,
-  ChevronDown,
-  ClipboardCopy,
-  ClipboardCheck,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { TrendingUp, ChevronDown } from 'lucide-react';
 import {
   Label,
   Pie,
@@ -42,7 +36,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 const UrlAnalytics = () => {
   const params = useParams({ from: '/analytics/$id' });
@@ -57,24 +50,12 @@ const UrlAnalytics = () => {
   const handleCopyShort = () => {
     const shortUrlFull = `${import.meta.env.VITE_BACKEND_URL}/${analytics?.urlId || id}`;
     navigator.clipboard.writeText(shortUrlFull);
-    toast.success('Short URL copied to clipboard!', {
-      style: {
-        background: 'var(--muted3)',
-        color: 'var(--foreground)',
-      },
-    });
     setCopiedShort(true);
     setTimeout(() => setCopiedShort(false), 1000);
   };
 
   const handleCopyOriginal = () => {
     navigator.clipboard.writeText(analytics?.originalUrl || '');
-    toast.success('Original URL copied to clipboard!', {
-      style: {
-        background: 'var(--muted3)',
-        color: 'var(--foreground)',
-      },
-    });
     setCopiedOriginal(true);
     setTimeout(() => setCopiedOriginal(false), 1000);
   };
@@ -325,7 +306,7 @@ const UrlAnalytics = () => {
           <CardDescription>
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">
-                Link created:{' '}
+                Created on:{' '}
                 {analytics?.createdAt
                   ? new Date(analytics.createdAt).toLocaleString('en-US', {
                       year: 'numeric',
@@ -342,72 +323,48 @@ const UrlAnalytics = () => {
         <CardContent className="space-y-3">
           <div className=" gap-4">
             <div>
+              {/* prev  */}
               <p className="text-sm font-medium text-muted-foreground mb-1">
                 Short URL
               </p>
-              <div className="flex">
-                <Input
-                  type="text"
-                  readOnly
-                  value={`${import.meta.env.VITE_BACKEND_URL}/${analytics?.urlId || id}`}
-                />
+              <div className="flex gap-2">
+                <p className="text-sm font-mono bg-muted px-3 py-2 rounded border-2 border-black break-all flex-1">
+                  {import.meta.env.VITE_BACKEND_URL}/{analytics?.urlId || id}
+                </p>
                 <Button
                   variant="noShadow"
                   onClick={handleCopyShort}
-                  className={`px-2 py-2 transition-colors duration-500 ${
-                    copiedShort ? '' : ''
+                  className={`px-4 py-2 rounded transition-colors duration-500 ${
+                    copiedShort
+                      ? 'bg-green-500 text-white hover:bg-green-600'
+                      : 'bg-gray-200 hover:bg-gray-300'
                   }`}
-                  style={{
-                    backgroundColor: copiedShort ? 'var(--muted3)' : '',
-                  }}
                 >
-                  {copiedShort ? (
-                    <>
-                      <ClipboardCheck />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <ClipboardCopy />
-                      Copy
-                    </>
-                  )}
+                  {copiedShort ? 'Copied!' : 'Copy'}
                 </Button>
               </div>
             </div>
+            {/* end of prev */}
           </div>
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1">
               Original URL
             </p>
-            <div className="flex">
-              <Input
-                type="text"
-                readOnly
-                value={analytics?.originalUrl || 'Loading...'}
-              />
+            <div className="flex gap-2">
+              <p className="text-sm font-mono bg-muted px-3 py-2 rounded border-2 border-black break-all flex-1">
+                {analytics?.originalUrl || 'Loading...'}
+              </p>
               <Button
                 variant="noShadow"
                 onClick={handleCopyOriginal}
                 disabled={!analytics?.originalUrl}
-                className={`px-2 py-2 transition-colors duration-500 ${
-                  copiedOriginal ? '' : ''
+                className={`px-4 py-2 rounded transition-colors duration-500 ${
+                  copiedOriginal
+                    ? 'bg-green-500 text-white hover:bg-green-600'
+                    : 'bg-gray-200 hover:bg-gray-300'
                 }`}
-                style={{
-                  backgroundColor: copiedOriginal ? 'var(--muted3)' : '',
-                }}
               >
-                {copiedOriginal ? (
-                  <>
-                    <ClipboardCheck />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <ClipboardCopy />
-                    Copy
-                  </>
-                )}
+                {copiedOriginal ? 'Copied!' : 'Copy'}
               </Button>
             </div>
           </div>
