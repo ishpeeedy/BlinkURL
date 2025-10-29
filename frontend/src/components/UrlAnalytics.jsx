@@ -73,6 +73,8 @@ const UrlAnalytics = () => {
         console.log('Fetching analytics for ID:', id);
         const data = await getUrlAnalytics(id);
         console.log('Received analytics data:', data);
+        console.log('clicksOverTime data:', data?.clicksOverTime);
+        console.log('clicksOverTime length:', data?.clicksOverTime?.length);
         setAnalytics(data);
         setError(null);
       } catch (err) {
@@ -173,7 +175,13 @@ const UrlAnalytics = () => {
 
   // Clicks over time data (with timeframe filtering)
   const clicksOverTimeData = useMemo(() => {
-    if (!analytics?.clicksOverTime) return [];
+    console.log('Computing clicksOverTimeData...');
+    console.log('analytics?.clicksOverTime:', analytics?.clicksOverTime);
+
+    if (!analytics?.clicksOverTime) {
+      console.log('No clicksOverTime data available');
+      return [];
+    }
 
     const now = new Date();
     let daysToSubtract = 30;
@@ -183,12 +191,31 @@ const UrlAnalytics = () => {
     const startDate = new Date(now);
     startDate.setDate(startDate.getDate() - daysToSubtract);
 
-    return analytics.clicksOverTime
-      .filter((item) => new Date(item._id) >= startDate)
+    console.log('Filtering from startDate:', startDate);
+    console.log('Current timeRange:', timeRange);
+
+    const filtered = analytics.clicksOverTime
+      .filter((item) => {
+        const itemDate = new Date(item._id);
+        console.log(
+          'Checking date:',
+          item._id,
+          'parsed as:',
+          itemDate,
+          'vs startDate:',
+          startDate
+        );
+        return itemDate >= startDate;
+      })
       .map((item) => ({
         date: item._id,
         clicks: item.count,
       }));
+
+    console.log('Filtered clicksOverTimeData:', filtered);
+    console.log('Filtered length:', filtered.length);
+
+    return filtered;
   }, [analytics, timeRange]);
 
   // Clicks by hour of day
@@ -304,8 +331,8 @@ const UrlAnalytics = () => {
         <CardHeader>
           <CardTitle> URL Analytics for: {id}</CardTitle>
           <CardDescription>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">
                 Created on:{' '}
                 {analytics?.createdAt
                   ? new Date(analytics.createdAt).toLocaleString('en-US', {
@@ -316,6 +343,12 @@ const UrlAnalytics = () => {
                       minute: '2-digit',
                     })
                   : 'N/A'}
+              </p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Total Clicks:{' '}
+                <span className="text-lg font-bold text-primary">
+                  {totalClicks}
+                </span>
               </p>
             </div>
           </CardDescription>
@@ -372,20 +405,10 @@ const UrlAnalytics = () => {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Total Clicks Card */}
-        <Card className="flex flex-col">
-          <CardHeader className="items-center pb-2">
-            <CardTitle>Total Clicks</CardTitle>
-            <CardDescription>All time clicks</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 flex items-center justify-center">
-            <p className="text-5xl font-bold text-primary">{totalClicks}</p>
-          </CardContent>
-        </Card>
-
+        {/* ROW 1: Browser, OS, Device */}
         {/* Browser Distribution Chart */}
         {browserData.length > 0 && (
-          <Card className="flex flex-col lg:col-span-2">
+          <Card className="flex flex-col">
             <CardHeader className="items-center pb-0">
               <CardTitle>Browser Distribution</CardTitle>
               <CardDescription>Clicks by browser type</CardDescription>
@@ -393,7 +416,7 @@ const UrlAnalytics = () => {
             <CardContent className="flex-1 pb-0">
               <ChartContainer
                 config={browserChartConfig}
-                className="mx-auto aspect-square max-h-[300px]"
+                className="mx-auto aspect-square max-h-[250px]"
               >
                 <PieChart>
                   <ChartTooltip
@@ -404,108 +427,15 @@ const UrlAnalytics = () => {
                     data={browserData}
                     dataKey="visitors"
                     nameKey="browser"
-                    innerRadius={60}
-                    strokeWidth={2}
-                  >
-                    <Label
-                      content={({ viewBox }) => {
-                        if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-                          return (
-                            <text
-                              x={viewBox.cx}
-                              y={viewBox.cy}
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                            >
-                              <tspan
-                                x={viewBox.cx}
-                                y={viewBox.cy}
-                                className="fill-foreground text-3xl font-bold"
-                              >
-                                {totalClicks.toLocaleString()}
-                              </tspan>
-                              <tspan
-                                x={viewBox.cx}
-                                y={(viewBox.cy || 0) + 24}
-                                className="fill-foreground"
-                              >
-                                Clicks
-                              </tspan>
-                            </text>
-                          );
-                        }
-                      }}
-                    />
-                  </Pie>
-                </PieChart>
-              </ChartContainer>
-            </CardContent>
-            <CardFooter className="flex-col gap-2 text-sm">
-              <div className="flex items-center gap-2 leading-none font-medium">
-                Browser analytics <TrendingUp className="h-4 w-4" />
-              </div>
-            </CardFooter>
-          </Card>
-        )}
-
-        {/* Device Distribution Chart */}
-        {deviceData.length > 0 && (
-          <Card className="flex flex-col">
-            <CardHeader className="items-center pb-0">
-              <CardTitle>Device Type</CardTitle>
-              <CardDescription>Clicks by device</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1 pb-0">
-              <ChartContainer
-                config={deviceChartConfig}
-                className="mx-auto aspect-square max-h-[250px]"
-              >
-                <PieChart>
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
-                  />
-                  <Pie
-                    data={deviceData}
-                    dataKey="visitors"
-                    nameKey="device"
                     innerRadius={50}
                     strokeWidth={2}
                   />
                 </PieChart>
               </ChartContainer>
             </CardContent>
-          </Card>
-        )}
-
-        {/* Country Distribution Chart */}
-        {countryData.length > 0 && (
-          <Card className="flex flex-col lg:col-span-2">
-            <CardHeader className="items-center pb-0">
-              <CardTitle>Geographic Distribution</CardTitle>
-              <CardDescription>Clicks by country</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1 pb-0">
-              <ChartContainer
-                config={countryChartConfig}
-                className="mx-auto aspect-video max-h-[300px]"
-              >
-                <BarChart data={countryData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="country"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="clicks" fill="var(--chart-1)" radius={8} />
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
-              <div className="text-muted-foreground leading-none">
-                Top countries by click count
+              <div className="flex items-center gap-2 leading-none font-medium">
+                Browser analytics <TrendingUp className="h-4 w-4" />
               </div>
             </CardFooter>
           </Card>
@@ -546,90 +476,128 @@ const UrlAnalytics = () => {
           </Card>
         )}
 
-        {/* Unique vs Repeat Visitors Chart */}
-        {visitorTypeData.length > 0 && (
-          <Card className="flex flex-col lg:col-span-2">
+        {/* Device Distribution Chart */}
+        {deviceData.length > 0 && (
+          <Card className="flex flex-col">
             <CardHeader className="items-center pb-0">
-              <CardTitle>Visitor Engagement</CardTitle>
-              <CardDescription>Unique vs Repeat Visitors</CardDescription>
+              <CardTitle>Device Type</CardTitle>
+              <CardDescription>Clicks by device</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
               <ChartContainer
-                config={visitorTypeConfig}
+                config={deviceChartConfig}
+                className="mx-auto aspect-square max-h-[250px]"
+              >
+                <PieChart>
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent hideLabel />}
+                  />
+                  <Pie
+                    data={deviceData}
+                    dataKey="visitors"
+                    nameKey="device"
+                    innerRadius={50}
+                    strokeWidth={2}
+                  />
+                </PieChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* ROW 2: Peak Hours (2 cols), Weekly Patterns (1 col) */}
+        {/* Clicks by Hour of Day */}
+        {clicksByHourData.length > 0 && (
+          <Card className="flex flex-col lg:col-span-2">
+            <CardHeader className="items-center pb-0">
+              <CardTitle>Peak Hours</CardTitle>
+              <CardDescription>Clicks by hour of day</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+              <ChartContainer
+                config={hourlyConfig}
                 className="mx-auto aspect-video max-h-[300px]"
               >
-                <BarChart data={visitorTypeData}>
+                <BarChart data={clicksByHourData}>
                   <CartesianGrid vertical={false} />
                   <XAxis
-                    dataKey="type"
+                    dataKey="hour"
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="count" fill="var(--chart-1)" radius={8} />
+                  <Bar dataKey="clicks" fill="var(--chart-2)" radius={4} />
                 </BarChart>
               </ChartContainer>
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
-              <div className="flex items-center gap-2 leading-none font-medium">
-                Engagement Analytics <TrendingUp className="h-4 w-4" />
-              </div>
               <div className="text-muted-foreground leading-none">
-                {analytics?.uniqueVisitors || 0} unique visitors out of{' '}
-                {totalClicks} total clicks
+                Identify peak engagement times
               </div>
             </CardFooter>
           </Card>
         )}
 
-        {/* Suspicious Activity Alert */}
-        {suspiciousIPs.length > 0 && (
-          <Card className="flex flex-col lg:col-span-3 border-orange-500 bg-orange-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-orange-700">
-                ⚠️ Suspicious Activity Detected
-              </CardTitle>
-              <CardDescription className="text-orange-600">
-                High-frequency clicks from the same IP addresses
-              </CardDescription>
+        {/* Clicks by Day of Week */}
+        {clicksByDayOfWeekData.length > 0 && (
+          <Card className="flex flex-col">
+            <CardHeader className="items-center pb-0">
+              <CardTitle>Weekly Patterns</CardTitle>
+              <CardDescription>Clicks by day of week</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {suspiciousIPs.slice(0, 5).map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center p-3 bg-white rounded-md border border-orange-200"
-                  >
-                    <div className="flex-1">
-                      <span className="font-mono text-sm font-semibold">
-                        {item._id}
-                      </span>
-                      <span className="text-xs text-muted-foreground ml-2">
-                        ({item.locations?.join(', ') || 'Unknown'})
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-orange-600">
-                        {item.count}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        clicks
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <CardContent className="flex-1 pb-0">
+              <ChartContainer
+                config={weekdayConfig}
+                className="mx-auto aspect-square max-h-[250px]"
+              >
+                <BarChart accessibilityLayer data={clicksByDayOfWeekData}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="day"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                  />
+                  <Bar
+                    dataKey="desktop"
+                    stackId="a"
+                    fill="var(--color-desktop)"
+                    radius={[0, 0, 4, 4]}
+                  />
+                  <Bar
+                    dataKey="mobile"
+                    stackId="a"
+                    fill="var(--color-mobile)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="tablet"
+                    stackId="a"
+                    fill="var(--color-tablet)"
+                    radius={[0, 0, 0, 0]}
+                  />
+                  <ChartTooltip
+                    content={<ChartTooltipContent hideLabel />}
+                    cursor={false}
+                    defaultIndex={1}
+                  />
+                </BarChart>
+              </ChartContainer>
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
-              <div className="text-orange-600 leading-none">
-                {suspiciousIPs.length} IP{suspiciousIPs.length > 1 ? 's' : ''}{' '}
-                with 10+ clicks detected
+              <div className="text-muted-foreground leading-none">
+                Mobile vs Desktop by weekday
               </div>
             </CardFooter>
           </Card>
         )}
 
+        {/* ROW 3: Clicks Over Time (3 cols full width) */}
         {/* Clicks Over Time - Interactive Area Chart */}
         {clicksOverTimeData.length > 0 && (
           <Card className="flex flex-col lg:col-span-3">
@@ -717,132 +685,126 @@ const UrlAnalytics = () => {
           </Card>
         )}
 
-        {/* Clicks by Hour of Day */}
-        {clicksByHourData.length > 0 && (
-          <Card className="flex flex-col lg:col-span-1.5">
+        {/* ROW 4: Geographic Distribution (3 cols full width) */}
+        {/* Country Distribution Chart */}
+        {countryData.length > 0 && (
+          <Card className="flex flex-col lg:col-span-3">
             <CardHeader className="items-center pb-0">
-              <CardTitle>Peak Hours</CardTitle>
-              <CardDescription>Clicks by hour of day</CardDescription>
+              <CardTitle>Geographic Distribution</CardTitle>
+              <CardDescription>Clicks by country</CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 pb-0">
+            <CardContent className="flex-1 pb-0 overflow-x-auto">
               <ChartContainer
-                config={hourlyConfig}
-                className="mx-auto aspect-square max-h-[300px]"
+                config={countryChartConfig}
+                className="max-h-[300px]"
+                style={{
+                  minWidth: `${Math.max(600, countryData.length * 60)}px`,
+                }}
               >
-                <BarChart data={clicksByHourData}>
+                <BarChart data={countryData}>
                   <CartesianGrid vertical={false} />
                   <XAxis
-                    dataKey="hour"
+                    dataKey="country"
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
                     angle={-45}
                     textAnchor="end"
-                    height={60}
+                    height={80}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="clicks" fill="var(--chart-2)" radius={4} />
+                  <Bar dataKey="clicks" fill="var(--chart-1)" radius={8} />
                 </BarChart>
               </ChartContainer>
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
               <div className="text-muted-foreground leading-none">
-                Identify peak engagement times
+                Top countries by click count • Scroll to see more →
               </div>
             </CardFooter>
           </Card>
         )}
 
-        {/* Clicks by Day of Week */}
-        {clicksByDayOfWeekData.length > 0 && (
-          <Card className="flex flex-col lg:col-span-1.5">
+        {/* ROW 5: Suspicious Activity (2 cols), Visitor Engagement (1 col) */}
+        {/* Suspicious Activity Alert */}
+        {suspiciousIPs.length > 0 && (
+          <Card className="flex flex-col lg:col-span-2 border-orange-500 bg-orange-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-orange-700">
+                ⚠️ Suspicious Activity Detected
+              </CardTitle>
+              <CardDescription className="text-orange-600">
+                High-frequency clicks from the same IP addresses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {suspiciousIPs.slice(0, 5).map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center p-3 bg-white rounded-md border border-orange-200"
+                  >
+                    <div className="flex-1">
+                      <span className="font-mono text-sm font-semibold">
+                        {item._id}
+                      </span>
+                      <span className="text-xs text-muted-foreground ml-2">
+                        ({item.locations?.join(', ') || 'Unknown'})
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-bold text-orange-600">
+                        {item.count}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        clicks
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+            <CardFooter className="flex-col gap-2 text-sm">
+              <div className="text-orange-600 leading-none">
+                {suspiciousIPs.length} IP{suspiciousIPs.length > 1 ? 's' : ''}{' '}
+                with 10+ clicks detected
+              </div>
+            </CardFooter>
+          </Card>
+        )}
+
+        {/* Unique vs Repeat Visitors Chart */}
+        {visitorTypeData.length > 0 && (
+          <Card className="flex flex-col">
             <CardHeader className="items-center pb-0">
-              <CardTitle>Weekly Patterns</CardTitle>
-              <CardDescription>Clicks by day of week</CardDescription>
+              <CardTitle>Visitor Engagement</CardTitle>
+              <CardDescription>Unique vs Repeat Visitors</CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
               <ChartContainer
-                config={weekdayConfig}
-                className="mx-auto aspect-square max-h-[300px]"
+                config={visitorTypeConfig}
+                className="mx-auto aspect-square max-h-[250px]"
               >
-                <BarChart accessibilityLayer data={clicksByDayOfWeekData}>
+                <BarChart data={visitorTypeData}>
                   <CartesianGrid vertical={false} />
                   <XAxis
-                    dataKey="day"
+                    dataKey="type"
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
                   />
-                  <Bar
-                    dataKey="desktop"
-                    stackId="a"
-                    fill="var(--color-desktop)"
-                    radius={[0, 0, 4, 4]}
-                  />
-                  <Bar
-                    dataKey="mobile"
-                    stackId="a"
-                    fill="var(--color-mobile)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="tablet"
-                    stackId="a"
-                    fill="var(--color-tablet)"
-                    radius={[0, 0, 0, 0]}
-                  />
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent
-                        hideLabel
-                        className="w-[180px]"
-                        formatter={(value, name, item, index) => {
-                          const total =
-                            (item.payload.desktop || 0) +
-                            (item.payload.mobile || 0) +
-                            (item.payload.tablet || 0);
-                          const isLastItem = index === 2; // tablet is last (index 2)
-
-                          return (
-                            <>
-                              <div
-                                className="h-2.5 w-2.5 shrink-0 border border-border rounded-[2px] bg-(--color-bg)"
-                                style={{
-                                  '--color-bg': `var(--color-${name})`,
-                                }}
-                              />
-                              {weekdayConfig[name]?.label || name}
-                              <div className="text-foreground ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums">
-                                {value}
-                                <span className="text-muted-foreground font-normal">
-                                  clicks
-                                </span>
-                              </div>
-                              {isLastItem && total > 0 && (
-                                <div className="text-foreground mt-1.5 flex basis-full items-center border-t pt-1.5 text-xs font-medium">
-                                  Total
-                                  <div className="text-foreground ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums">
-                                    {total}
-                                    <span className="text-muted-foreground font-normal">
-                                      clicks
-                                    </span>
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          );
-                        }}
-                      />
-                    }
-                    cursor={false}
-                    defaultIndex={1}
-                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="count" fill="var(--chart-1)" radius={8} />
                 </BarChart>
               </ChartContainer>
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
+              <div className="flex items-center gap-2 leading-none font-medium">
+                Engagement Analytics <TrendingUp className="h-4 w-4" />
+              </div>
               <div className="text-muted-foreground leading-none">
-                Mobile vs Desktop engagement by weekday
+                {analytics?.uniqueVisitors || 0} unique visitors out of{' '}
+                {totalClicks} total clicks
               </div>
             </CardFooter>
           </Card>
