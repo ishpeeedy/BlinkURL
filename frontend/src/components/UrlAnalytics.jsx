@@ -10,6 +10,7 @@ import {
   BarChart,
   CartesianGrid,
   XAxis,
+  YAxis,
   Area,
   AreaChart,
 } from 'recharts';
@@ -696,21 +697,20 @@ const UrlAnalytics = () => {
             <CardContent className="flex-1 pb-0 overflow-x-auto">
               <ChartContainer
                 config={countryChartConfig}
-                className="max-h-[300px]"
+                className="w-full"
                 style={{
-                  minWidth: `${Math.max(600, countryData.length * 60)}px`,
+                  height: `${Math.max(300, countryData.length * 30)}px`,
                 }}
               >
-                <BarChart data={countryData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
+                <BarChart data={countryData} layout="vertical" width={800}>
+                  <CartesianGrid horizontal={false} />
+                  <XAxis type="number" />
+                  <YAxis
+                    type="category"
                     dataKey="country"
                     tickLine={false}
-                    tickMargin={10}
                     axisLine={false}
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
+                    width={120}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="clicks" fill="var(--chart-1)" radius={8} />
@@ -719,7 +719,7 @@ const UrlAnalytics = () => {
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
               <div className="text-muted-foreground leading-none">
-                Top countries by click count • Scroll to see more →
+                Top countries by click count
               </div>
             </CardFooter>
           </Card>
