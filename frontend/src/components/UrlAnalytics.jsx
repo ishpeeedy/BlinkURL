@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from '@tanstack/react-router';
 import { getUrlAnalytics } from '../api/shortUrl.api';
-import { TrendingUp, ChevronDown } from 'lucide-react';
+import {
+  TrendingUp,
+  ChevronDown,
+  ClipboardCheck,
+  ClipboardCopy,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Label,
   Pie,
@@ -51,12 +57,24 @@ const UrlAnalytics = () => {
   const handleCopyShort = () => {
     const shortUrlFull = `${import.meta.env.VITE_BACKEND_URL}/${analytics?.urlId || id}`;
     navigator.clipboard.writeText(shortUrlFull);
+    toast.success('Short URL copied to clipboard!', {
+      style: {
+        background: 'var(--muted3)',
+        color: 'var(--foreground)',
+      },
+    });
     setCopiedShort(true);
     setTimeout(() => setCopiedShort(false), 1000);
   };
 
   const handleCopyOriginal = () => {
     navigator.clipboard.writeText(analytics?.originalUrl || '');
+    toast.success('Original URL copied to clipboard!', {
+      style: {
+        background: 'var(--muted3)',
+        color: 'var(--foreground)',
+      },
+    });
     setCopiedOriginal(true);
     setTimeout(() => setCopiedOriginal(false), 1000);
   };
@@ -185,38 +203,41 @@ const UrlAnalytics = () => {
     }
 
     const now = new Date();
+    now.setHours(0, 0, 0, 0); // Start of today
+    
     let daysToSubtract = 30;
     if (timeRange === '7d') daysToSubtract = 7;
     else if (timeRange === '90d') daysToSubtract = 90;
 
     const startDate = new Date(now);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
+    startDate.setDate(startDate.getDate() - daysToSubtract + 1); // Include today
 
     console.log('Filtering from startDate:', startDate);
     console.log('Current timeRange:', timeRange);
 
-    const filtered = analytics.clicksOverTime
-      .filter((item) => {
-        const itemDate = new Date(item._id);
-        console.log(
-          'Checking date:',
-          item._id,
-          'parsed as:',
-          itemDate,
-          'vs startDate:',
-          startDate
-        );
-        return itemDate >= startDate;
-      })
-      .map((item) => ({
-        date: item._id,
-        clicks: item.count,
-      }));
+    // Create a map of existing data
+    const dataMap = new Map();
+    analytics.clicksOverTime.forEach((item) => {
+      dataMap.set(item._id, item.count);
+    });
 
-    console.log('Filtered clicksOverTimeData:', filtered);
-    console.log('Filtered length:', filtered.length);
+    // Fill in all dates in the range
+    const result = [];
+    const currentDate = new Date(startDate);
+    
+    while (currentDate <= now) {
+      const dateStr = currentDate.toISOString().split('T')[0];
+      result.push({
+        date: dateStr,
+        clicks: dataMap.get(dateStr) || 0,
+      });
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
 
-    return filtered;
+    console.log('Filled clicksOverTimeData:', result);
+    console.log('Filled length:', result.length);
+
+    return result;
   }, [analytics, timeRange]);
 
   // Clicks by hour of day
@@ -368,13 +389,22 @@ const UrlAnalytics = () => {
                 <Button
                   variant="noShadow"
                   onClick={handleCopyShort}
-                  className={`px-4 py-2 rounded transition-colors duration-500 ${
-                    copiedShort
-                      ? 'bg-green-500 text-white hover:bg-green-600'
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
+                  className="px-2 py-2 transition-colors duration-500"
+                  style={{
+                    backgroundColor: copiedShort ? 'var(--muted3)' : '',
+                  }}
                 >
-                  {copiedShort ? 'Copied!' : 'Copy'}
+                  {copiedShort ? (
+                    <>
+                      <ClipboardCheck />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <ClipboardCopy />
+                      Copy
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
@@ -392,13 +422,22 @@ const UrlAnalytics = () => {
                 variant="noShadow"
                 onClick={handleCopyOriginal}
                 disabled={!analytics?.originalUrl}
-                className={`px-4 py-2 rounded transition-colors duration-500 ${
-                  copiedOriginal
-                    ? 'bg-green-500 text-white hover:bg-green-600'
-                    : 'bg-gray-200 hover:bg-gray-300'
-                }`}
+                className="px-2 py-2 transition-colors duration-500"
+                style={{
+                  backgroundColor: copiedOriginal ? 'var(--muted3)' : '',
+                }}
               >
-                {copiedOriginal ? 'Copied!' : 'Copy'}
+                {copiedOriginal ? (
+                  <>
+                    <ClipboardCheck />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <ClipboardCopy />
+                    Copy
+                  </>
+                )}
               </Button>
             </div>
           </div>
