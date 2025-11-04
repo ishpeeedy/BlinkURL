@@ -204,7 +204,7 @@ const UrlAnalytics = () => {
 
     const now = new Date();
     now.setHours(0, 0, 0, 0); // Start of today
-    
+
     let daysToSubtract = 30;
     if (timeRange === '7d') daysToSubtract = 7;
     else if (timeRange === '90d') daysToSubtract = 90;
@@ -224,7 +224,7 @@ const UrlAnalytics = () => {
     // Fill in all dates in the range
     const result = [];
     const currentDate = new Date(startDate);
-    
+
     while (currentDate <= now) {
       const dateStr = currentDate.toISOString().split('T')[0];
       result.push({
@@ -691,6 +691,7 @@ const UrlAnalytics = () => {
                       });
                     }}
                   />
+                  <YAxis domain={[0, 'auto']} hide />
                   <ChartTooltip
                     cursor={false}
                     content={
@@ -708,7 +709,7 @@ const UrlAnalytics = () => {
                   />
                   <Area
                     dataKey="clicks"
-                    type="natural"
+                    type="monotone"
                     fill="var(--chart-1)"
                     stroke="var(--chart-1)"
                     fillOpacity={0.4}
