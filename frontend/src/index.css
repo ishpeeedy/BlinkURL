@@ -25,6 +25,8 @@
   --muted4: #f8d6b3;
   --muted5: #fcdfff;
   --muted6: #e3dff2;
+  --grid-background: #252525;
+  --grid-foreground: #3d3d3d;
 }
 
 .dark {
@@ -42,6 +44,8 @@
   --chart-4: #eb6d00;
   --chart-5: #008ae5;
   --chart-active-dot: #fff;
+  --grid-background: #252525;
+  --grid-foreground: #3d3d3d;
 }
 
 @theme inline {
@@ -69,37 +73,24 @@
   --font-weight-heading: 700;
 }
 
+@keyframes gridSlideUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50px);
+  }
+}
+
+.animate-gridSlideUp {
+  animation: gridSlideUp 10s linear infinite;
+}
+
 @layer base {
   body {
     @apply text-foreground font-base bg-background;
     position: relative;
     overflow-x: hidden;
-  }
-
-  /* Animated grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 200%;
-    background-image:
-      linear-gradient(to right, #3d3d3d 1px, transparent 1px),
-      linear-gradient(to bottom, #3d3d3d 1px, transparent 1px);
-    background-size: 50px 50px;
-    background-color: #252525;
-    z-index: -1;
-    animation: gridSlideUp 10s linear infinite;
-  }
-
-  @keyframes gridSlideUp {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-50px);
-    }
   }
 
   h1,
