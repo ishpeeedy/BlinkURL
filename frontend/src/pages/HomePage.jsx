@@ -46,7 +46,7 @@ const HomePage = () => {
         </div>
       </section>
       <section
-        className="container mx-auto px-4 py-8 rounded-2xl mb-4"
+        className="container mx-auto px-4 py-2 rounded-2xl mb-4"
         style={{ backgroundColor: 'var(--muted4)' }}
       >
         <div className="grid md:grid-cols-3 gap-8 items-center">
@@ -69,18 +69,14 @@ const HomePage = () => {
             </h1>
             <p className="text-lg ">
               Smarter links for modern creators and businesses. Create short
-              links, analyze clicks, generate QR codes, and detect suspicious
-              traffic — all in one dashboard.
-              <a href="https://storyset.com/technology">
-                Technology illustrations by Storyset
-              </a>
+              links and generate QR codes that you can share easily.
             </p>
           </Card>
         </div>
       </section>
 
       <section
-        className="container mx-auto px-4 py-8 rounded-2xl mb-4"
+        className="container mx-auto px-4 py-0 rounded-2xl"
         style={{ backgroundColor: 'var(--muted3)' }}
       >
         <div className="grid md:grid-cols-3 gap-8 items-center">
@@ -93,12 +89,10 @@ const HomePage = () => {
               Analyse
             </h1>
             <p className="text-lg ">
-              Smarter links for modern creators and businesses. Create short
-              links, analyze clicks, generate QR codes, and detect suspicious
-              traffic — all in one dashboard.
-              <a href="https://storyset.com/business">
-                Business illustrations by Storyset
-              </a>
+              Get meaningful insights from the data. Track clicks, geographical
+              insights, operating systems, device type, peak hours, weekly
+              paterns demographics and detect suspicious traffic all in one
+              dashboard.
             </p>
           </Card>
 
