@@ -13,7 +13,7 @@ const SEED_USER = {
   name: 'Admin User',
   email: 'admin@blinkurl.com',
   password: 'Admin123!', // Will be hashed
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
+  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
 };
 
 const COUNTRIES = [
@@ -66,7 +66,7 @@ const COUNTRIES = [
   { country: 'UAE', region: 'Dubai', city: 'Dubai' },
   { country: 'Saudi Arabia', region: 'Riyadh', city: 'Riyadh' },
   { country: 'Israel', region: 'Tel Aviv', city: 'Tel Aviv' },
-  { country: 'New Zealand', region: 'Auckland', city: 'Auckland' }
+  { country: 'New Zealand', region: 'Auckland', city: 'Auckland' },
 ];
 
 const BROWSERS = [
@@ -77,7 +77,7 @@ const BROWSERS = [
   'Opera',
   'Brave',
   'Samsung Internet',
-  'UC Browser'
+  'UC Browser',
 ];
 
 const DEVICES = [
@@ -86,7 +86,7 @@ const DEVICES = [
   'Tablet',
   'Desktop',
   'Mobile',
-  'Desktop' // More desktop traffic
+  'Desktop', // More desktop traffic
 ];
 
 const OS_LIST = [
@@ -99,64 +99,65 @@ const OS_LIST = [
   'Android 13',
   'iOS 17',
   'iOS 16',
-  'Linux'
+  'Linux',
 ];
 
 const SHORT_URLS = [
   {
     full_url: 'https://github.com/torvalds/linux',
     short_url: 'gh-linux',
-    clickCount: 3200 // Main URL with 3k+ hits
+    clickCount: 3200, // Main URL with 3k+ hits
   },
   {
     full_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     short_url: 'yt-music',
-    clickCount: 850
+    clickCount: 850,
   },
   {
     full_url: 'https://www.amazon.com/deals',
     short_url: 'amz-deals',
-    clickCount: 1240
+    clickCount: 1240,
   },
   {
     full_url: 'https://docs.google.com/presentation/d/1abc123xyz789',
     short_url: 'gdoc-pres',
-    clickCount: 420
+    clickCount: 420,
   },
   {
     full_url: 'https://www.wikipedia.org/wiki/Artificial_intelligence',
     short_url: 'wiki-ai',
-    clickCount: 680
+    clickCount: 680,
   },
   {
     full_url: 'https://www.reddit.com/r/programming',
     short_url: 'r-prog',
-    clickCount: 920
+    clickCount: 920,
   },
   {
     full_url: 'https://stackoverflow.com/questions/tagged/javascript',
     short_url: 'so-js',
-    clickCount: 1560
+    clickCount: 1560,
   },
   {
     full_url: 'https://www.netflix.com/browse',
     short_url: 'nf-browse',
-    clickCount: 340
+    clickCount: 340,
   },
   {
     full_url: 'https://www.linkedin.com/jobs/search',
     short_url: 'li-jobs',
-    clickCount: 780
+    clickCount: 780,
   },
   {
     full_url: 'https://twitter.com/elonmusk',
     short_url: 'tw-elon',
-    clickCount: 1120
-  }
+    clickCount: 1120,
+  },
 ];
 
 // Helper functions
-const randomElement = (array) => array[Math.floor(Math.random() * array.length)];
+const randomElement = (array) =>
+  array[Math.floor(Math.random() * array.length)];
 
 const generateIP = () => {
   return `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`;
@@ -167,12 +168,17 @@ const getRandomDate = (daysBack) => {
   const randomDays = Math.floor(Math.random() * daysBack);
   const randomHours = Math.floor(Math.random() * 24);
   const randomMinutes = Math.floor(Math.random() * 60);
-  return new Date(now.getTime() - (randomDays * 24 * 60 * 60 * 1000) - (randomHours * 60 * 60 * 1000) - (randomMinutes * 60 * 1000));
+  return new Date(
+    now.getTime() -
+      randomDays * 24 * 60 * 60 * 1000 -
+      randomHours * 60 * 60 * 1000 -
+      randomMinutes * 60 * 1000
+  );
 };
 
 const generateClicks = (shortUrlId, count, daysBack = 90) => {
   const clicks = [];
-  
+
   for (let i = 0; i < count; i++) {
     const location = randomElement(COUNTRIES);
     clicks.push({
@@ -181,19 +187,19 @@ const generateClicks = (shortUrlId, count, daysBack = 90) => {
       location: {
         country: location.country,
         region: location.region,
-        city: location.city
+        city: location.city,
       },
       userAgent: {
         browser: randomElement(BROWSERS),
         device: randomElement(DEVICES),
-        os: randomElement(OS_LIST)
+        os: randomElement(OS_LIST),
       },
       timestamp: getRandomDate(daysBack),
       createdAt: getRandomDate(daysBack),
-      updatedAt: getRandomDate(daysBack)
+      updatedAt: getRandomDate(daysBack),
     });
   }
-  
+
   return clicks;
 };
 
@@ -218,14 +224,14 @@ const seedDatabase = async () => {
       name: SEED_USER.name,
       email: SEED_USER.email,
       password: hashedPassword,
-      avatar: SEED_USER.avatar
+      avatar: SEED_USER.avatar,
     });
     console.log(chalk.green(`✓ User created: ${user.email}`));
 
     // Create short URLs
     console.log(chalk.blue('\nCreating short URLs...'));
     const urlIds = [];
-    
+
     for (const urlData of SHORT_URLS) {
       const shortUrl = await UrlModel.create({
         full_url: urlData.full_url,
@@ -233,40 +239,62 @@ const seedDatabase = async () => {
         clicks: urlData.clickCount,
         user: user._id,
         createdAt: getRandomDate(120),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
-      urlIds.push({ id: shortUrl._id, clickCount: urlData.clickCount, short_url: urlData.short_url });
-      console.log(chalk.gray(`  - Created: ${urlData.short_url} (${urlData.clickCount} clicks planned)`));
+      urlIds.push({
+        id: shortUrl._id,
+        clickCount: urlData.clickCount,
+        short_url: urlData.short_url,
+      });
+      console.log(
+        chalk.gray(
+          `  - Created: ${urlData.short_url} (${urlData.clickCount} clicks planned)`
+        )
+      );
     }
     console.log(chalk.green(`✓ ${SHORT_URLS.length} short URLs created`));
 
     // Generate clicks for each URL
     console.log(chalk.blue('\nGenerating click data...'));
     let totalClicks = 0;
-    
+
     for (const urlInfo of urlIds) {
-      console.log(chalk.gray(`  - Generating ${urlInfo.clickCount} clicks for ${urlInfo.short_url}...`));
+      console.log(
+        chalk.gray(
+          `  - Generating ${urlInfo.clickCount} clicks for ${urlInfo.short_url}...`
+        )
+      );
       const clicks = generateClicks(urlInfo.id, urlInfo.clickCount);
-      
+
       // Insert clicks in batches to avoid memory issues
       const batchSize = 500;
       for (let i = 0; i < clicks.length; i += batchSize) {
         const batch = clicks.slice(i, i + batchSize);
         await Click.insertMany(batch);
         totalClicks += batch.length;
-        
+
         if (clicks.length > 1000 && (i + batchSize) % 1000 === 0) {
-          console.log(chalk.gray(`    ${i + batchSize}/${clicks.length} clicks inserted...`));
+          console.log(
+            chalk.gray(
+              `    ${i + batchSize}/${clicks.length} clicks inserted...`
+            )
+          );
         }
       }
-      
-      console.log(chalk.green(`  ✓ ${urlInfo.clickCount} clicks created for ${urlInfo.short_url}`));
+
+      console.log(
+        chalk.green(
+          `  ✓ ${urlInfo.clickCount} clicks created for ${urlInfo.short_url}`
+        )
+      );
     }
-    
+
     console.log(chalk.green(`✓ Total ${totalClicks} clicks generated`));
 
     // Summary
-    console.log(chalk.bgGreen(chalk.black('\n========== SEED COMPLETE ==========')));
+    console.log(
+      chalk.bgGreen(chalk.black('\n========== SEED COMPLETE =========='))
+    );
     console.log(chalk.cyan('\n📊 Database seeded successfully!\n'));
     console.log(chalk.white('Login Credentials:'));
     console.log(chalk.yellow(`  Email:    ${SEED_USER.email}`));
@@ -277,9 +305,12 @@ const seedDatabase = async () => {
     console.log(chalk.gray(`  Total Clicks: ${totalClicks}`));
     console.log(chalk.gray(`  Countries:  ${COUNTRIES.length}`));
     console.log(chalk.white('\nHighest traffic URL:'));
-    console.log(chalk.gray(`  ${SHORT_URLS[0].short_url} - ${SHORT_URLS[0].clickCount} clicks`));
+    console.log(
+      chalk.gray(
+        `  ${SHORT_URLS[0].short_url} - ${SHORT_URLS[0].clickCount} clicks`
+      )
+    );
     console.log(chalk.gray(`  Full URL: ${SHORT_URLS[0].full_url}\n`));
-
   } catch (error) {
     console.error(chalk.red('Error seeding database:'), error);
     throw error;
