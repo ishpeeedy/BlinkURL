@@ -7,15 +7,12 @@
 ![TanStack Router](https://img.shields.io/badge/TanStack_Router-%23000000.svg?style=for-the-badge&logo=tanstack&logoColor=a985ff)
 ![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-%23000000.svg?style=for-the-badge&logo=redux&logoColor=a985ff)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%23000000.svg?style=for-the-badge&logo=tailwind-css&logoColor=a985ff)
-![Radix UI](https://img.shields.io/badge/Radix_UI-%23000000.svg?style=for-the-badge&logo=radixui&logoColor=a985ff)
-![shadcn/ui](https://img.shields.io/badge/shadcn/ui-%23000000.svg?style=for-the-badge&logo=shadcnui&logoColor=a985ff)
 ![Recharts](https://img.shields.io/badge/Recharts-%23000000.svg?style=for-the-badge&logoColor=a985ff)
 ![Vite](https://img.shields.io/badge/Vite-%23000000.svg?style=for-the-badge&logo=vite&logoColor=a985ff)
 ![Node.js](https://img.shields.io/badge/Node.js-%23000000.svg?style=for-the-badge&logo=node.js&logoColor=a985ff)
 ![Express](https://img.shields.io/badge/Express-%23000000.svg?style=for-the-badge&logo=express&logoColor=a985ff)
 ![MongoDB](https://img.shields.io/badge/MongoDB-%23000000.svg?style=for-the-badge&logo=mongodb&logoColor=a985ff)
 ![Mongoose](https://img.shields.io/badge/Mongoose-%23000000.svg?style=for-the-badge&logo=mongoose&logoColor=a985ff)
-![JWT](https://img.shields.io/badge/JWT-%23000000.svg?style=for-the-badge&logo=jsonwebtokens&logoColor=a985ff)
 ![Render](https://img.shields.io/badge/Render-%23000000.svg?style=for-the-badge&logo=render&logoColor=a985ff)
 
 <center>
