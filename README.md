@@ -3,27 +3,19 @@
 **BlinkURL — shorten URLs with custom slugs, auto-generate QR codes, and track every click with a full analytics dashboard (geography, devices, time patterns, and suspicious traffic detection).**
 
 ![React 19](https://img.shields.io/badge/React_19-%23000000.svg?style=for-the-badge&logo=react&logoColor=a985ff)
+![JavaScript](https://img.shields.io/badge/javaScript-%23000000.svg?style=for-the-badge&logo=javascript&logoColor=a985ff)
 ![TanStack Router](https://img.shields.io/badge/TanStack_Router-%23000000.svg?style=for-the-badge&logo=tanstack&logoColor=a985ff)
 ![Redux Toolkit](https://img.shields.io/badge/Redux_Toolkit-%23000000.svg?style=for-the-badge&logo=redux&logoColor=a985ff)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-%23000000.svg?style=for-the-badge&logo=tailwind-css&logoColor=a985ff)
 ![Radix UI](https://img.shields.io/badge/Radix_UI-%23000000.svg?style=for-the-badge&logo=radixui&logoColor=a985ff)
 ![shadcn/ui](https://img.shields.io/badge/shadcn/ui-%23000000.svg?style=for-the-badge&logo=shadcnui&logoColor=a985ff)
-![Lucide](https://img.shields.io/badge/Lucide-%23000000.svg?style=for-the-badge&logo=lucide&logoColor=a985ff)
 ![Recharts](https://img.shields.io/badge/Recharts-%23000000.svg?style=for-the-badge&logoColor=a985ff)
-![Axios](https://img.shields.io/badge/Axios-%23000000.svg?style=for-the-badge&logo=axios&logoColor=a985ff)
-![QR Code](https://img.shields.io/badge/QR_Code-%23000000.svg?style=for-the-badge&logoColor=a985ff)
 ![Vite](https://img.shields.io/badge/Vite-%23000000.svg?style=for-the-badge&logo=vite&logoColor=a985ff)
 ![Node.js](https://img.shields.io/badge/Node.js-%23000000.svg?style=for-the-badge&logo=node.js&logoColor=a985ff)
 ![Express](https://img.shields.io/badge/Express-%23000000.svg?style=for-the-badge&logo=express&logoColor=a985ff)
 ![MongoDB](https://img.shields.io/badge/MongoDB-%23000000.svg?style=for-the-badge&logo=mongodb&logoColor=a985ff)
 ![Mongoose](https://img.shields.io/badge/Mongoose-%23000000.svg?style=for-the-badge&logo=mongoose&logoColor=a985ff)
 ![JWT](https://img.shields.io/badge/JWT-%23000000.svg?style=for-the-badge&logo=jsonwebtokens&logoColor=a985ff)
-![bcryptjs](https://img.shields.io/badge/bcryptjs-%23000000.svg?style=for-the-badge&logoColor=a985ff)
-![Winston](https://img.shields.io/badge/Winston-%23000000.svg?style=for-the-badge&logo=winston&logoColor=a985ff)
-![dotenv](https://img.shields.io/badge/dotenv-%23000000.svg?style=for-the-badge&logo=dotenv&logoColor=a985ff)
-![ESLint](https://img.shields.io/badge/ESLint-%23000000.svg?style=for-the-badge&logo=eslint&logoColor=a985ff)
-![Prettier](https://img.shields.io/badge/Prettier-%23000000.svg?style=for-the-badge&logo=prettier&logoColor=a985ff)
-![Nodemon](https://img.shields.io/badge/Nodemon-%23000000.svg?style=for-the-badge&logo=nodemon&logoColor=a985ff)
 ![Render](https://img.shields.io/badge/Render-%23000000.svg?style=for-the-badge&logo=render&logoColor=a985ff)
 
 <center>
