@@ -50,7 +50,7 @@ const Footer = () => {
           </div>
           <p className="text-center text-sm text-main-foreground">
             <a
-              href="https://github.com/ishpeeedy"
+              href="https://www.ishpeeedy.dev/"
               className="underline flex items-center gap-2"
             >
               <span>Made with 🖤 by ishpeeedy</span>
