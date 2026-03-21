@@ -35,12 +35,6 @@ export const redirectFromShortUrl = wrapAsync(async (req, res) => {
   res.redirect(url.full_url);
 });
 
-export const createCustomShortUrl = wrapAsync(async (req, res) => {
-  const { url, customUrl } = req.body;
-  const shortUrl = await createShortUrlWithoutUser(url, customUrl);
-  res.status(200).json({ shortUrl: `${process.env.APP_URL}${shortUrl}` });
-});
-
 export const deleteShortUrlById = wrapAsync(async (req, res) => {
   const { id } = req.params;
 
@@ -54,7 +48,6 @@ export const deleteShortUrlById = wrapAsync(async (req, res) => {
   if (!shortUrl.user || shortUrl.user.toString() !== req.user._id.toString()) {
     return res.status(403).json({ message: 'Forbidden' });
   }
-  await deleteShortUrl(id);
 
   // Delete all associated clicks
   const clicksDeleted = await deleteClicksByShortUrl(shortUrl._id);
