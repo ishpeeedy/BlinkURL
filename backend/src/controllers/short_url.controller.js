@@ -29,8 +29,9 @@ export const redirectFromShortUrl = wrapAsync(async (req, res) => {
   if (!url) throw new Error('Short URL not found');
 
   // Track the click asynchronously - don't wait for it to complete
-  await trackClick(req, url._id); // Changed to await to ensure tracking completes
-
+  trackClick(req, url._id).catch((err) =>
+    logger.error('trackClick failed', { err })
+  );
   res.redirect(url.full_url);
 });
 
