@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /analytics/
+
+Sitemap: https://blinkurl.ishpeeedy.dev/sitemap.xml
