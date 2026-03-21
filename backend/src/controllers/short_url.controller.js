@@ -1,4 +1,8 @@
-import { getShortUrl, getCustomShortUrl, deleteShortUrl } from '../dao/short_url.js';
+import {
+  getShortUrl,
+  getCustomShortUrl,
+  deleteShortUrl,
+} from '../dao/short_url.js';
 import {
   createShortUrlWithoutUser,
   createShortUrlWithUser,
@@ -23,10 +27,10 @@ export const redirectFromShortUrl = wrapAsync(async (req, res) => {
   const { id } = req.params;
   const url = await getShortUrl(id);
   if (!url) throw new Error('Short URL not found');
-  
+
   // Track the click asynchronously - don't wait for it to complete
-  await trackClick(req, url._id);  // Changed to await to ensure tracking completes
-  
+  await trackClick(req, url._id); // Changed to await to ensure tracking completes
+
   res.redirect(url.full_url);
 });
 
@@ -38,26 +42,29 @@ export const createCustomShortUrl = wrapAsync(async (req, res) => {
 
 export const deleteShortUrlById = wrapAsync(async (req, res) => {
   const { id } = req.params;
-  
+
   logger.info('Attempting to delete short URL:', id);
-  
+
   // First, get the URL to retrieve its ObjectId
   const shortUrl = await getCustomShortUrl(id);
   if (!shortUrl) {
-    logger.warn('Short URL not found for deletion:', id);
     return res.status(404).json({ message: 'URL not found' });
   }
-  
+  if (!shortUrl.user || shortUrl.user.toString() !== req.user._id.toString()) {
+    return res.status(403).json({ message: 'Forbidden' });
+  }
+  await deleteShortUrl(id);
+
   // Delete all associated clicks
   const clicksDeleted = await deleteClicksByShortUrl(shortUrl._id);
   logger.info('Deleted clicks:', clicksDeleted.deletedCount);
-  
+
   // Delete the short URL
   await deleteShortUrl(id);
   logger.info('Short URL deleted successfully:', id);
-  
-  res.status(200).json({ 
+
+  res.status(200).json({
     message: 'URL and associated clicks deleted successfully',
-    clicksDeleted: clicksDeleted.deletedCount
+    clicksDeleted: clicksDeleted.deletedCount,
   });
 });
